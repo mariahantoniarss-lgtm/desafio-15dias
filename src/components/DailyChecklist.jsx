@@ -36,7 +36,7 @@ const DailyChecklist = () => {
 
       <div className="checklist-content scale-in">
         <div className="dia-header">
-          <div className="dia-titulo">🍷 Dia {activeDay + 1}</div>
+          <div className="dia-titulo">Dia {activeDay + 1}</div>
           <div className="dia-data-badge">{getDayLabel(activeDay)}</div>
         </div>
 

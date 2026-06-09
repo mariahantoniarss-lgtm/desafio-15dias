@@ -41,7 +41,7 @@ const FinalSection = () => {
     <section>
       <div className="final-section premium-gradient animate-fade-up">
         <div className="final-titulo">Para lembrar nos dias difíceis</div>
-        <h2 className="final-h2">Você está construindo<br />algo maior 🍷</h2>
+        <h2 className="final-h2">Você está construindo<br />algo maior </h2>
         <p className="final-texto">
           Você não está competindo com outras afiliadas.<br />
           Você não precisa ter o melhor celular.<br />
@@ -51,7 +51,7 @@ const FinalSection = () => {
           O Time Friends cresce quando cada menina dá um pequeno passo.<br />
           E pequenos passos, repetidos todos os dias, <strong>mudam histórias</strong>.
         </p>
-        <div className="final-frase">🍷 Juntas somos mais fortes.</div>
+        <div className="final-frase"> Juntas somos mais fortes.</div>
         
         <div className="btn-row">
           <button className="btn-primary" onClick={() => setShowShareModal(true)}>📲 Compartilhar meu progresso</button>
@@ -100,7 +100,7 @@ const FinalSection = () => {
           margin-bottom: 40px;
         }
         .final-section::before {
-          content: '🍷';
+          content: '✨';
           font-size: 8rem;
           position: absolute;
           top: -20px;

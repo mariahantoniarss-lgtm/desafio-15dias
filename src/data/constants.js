@@ -28,7 +28,7 @@ export const FRASES_MOTIVACIONAIS = [
   "Ninguém vê a construção. Todo mundo vai ver o resultado.",
   "Continue. Amanhã você agradece por não ter parado hoje.",
   "Você já chegou até aqui. Isso não é pouca coisa.",
-  "O Time Friends te vê crescer. Nós nos orgulhamos de você. 🍷",
+  "O Time Friends te vê crescer. Nós nos orgulhamos de você. ",
   "Ação gera resultado. Você provou isso hoje.",
   "Parabéns. Você é a prova de que comprometimento existe.",
 ];

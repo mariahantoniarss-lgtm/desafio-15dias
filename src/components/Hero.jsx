@@ -14,7 +14,6 @@ const Hero = () => {
     <header className="hero premium-gradient">
       <div className="hero-inner animate-fade-up">
         <span className="hero-tag glass-pill">Time Friends × Ybera Paris</span>
-        <span className="hero-grape">🍷</span>
         <h1 className="hero-titulo">DESAFIO FRIENDS</h1>
         <div className="hero-num">15</div>
         <div className="hero-subtitulo">Menos Perfeição. Mais Execução.</div>
