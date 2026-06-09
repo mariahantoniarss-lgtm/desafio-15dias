@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+  /* Cores Principais */
+  --color-vinho: #6D213C;
+  --color-vinho-dark: #4A1328;
+  --color-vinho-light: #8B3050;
+  --color-rose: #D8A0B4;
+  --color-rose-light: #F8EDF1;
+  --color-rose-soft: #FDF5F8;
+  --color-white: #FFFFFF;
+  --color-text: #3A2030;
+  --color-text-soft: #7A5568;
+  --color-gold: #C9904E;
+  --color-gold-soft: #FDF0E3;
+
+  /* Efeitos e Bordas */
+  --border-light: rgba(109, 33, 60, 0.12);
+  --shadow-soft: 0 4px 24px rgba(109, 33, 60, 0.10);
+  --shadow-medium: 0 8px 32px rgba(109, 33, 60, 0.15);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  
+  /* Tipografia */
+  --font-primary: 'Inter', sans-serif;
+  --font-secondary: 'Poppins', sans-serif;
+  
+  /* Espaçamento e Bordas */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 40px;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--color-rose-soft);
+  color: var(--color-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-secondary);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Utilitários Visuais */
+.premium-gradient {
+  background: linear-gradient(160deg, var(--color-vinho-dark) 0%, var(--color-vinho) 55%, #9B3060 100%);
+}
+
+.glass-pill {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  padding: 6px 18px;
+  border-radius: var(--radius-full);
+}
+
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Animações Globais */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.8s ease both;
+}
