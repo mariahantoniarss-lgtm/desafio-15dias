@@ -165,6 +165,7 @@ const InspirationGrid = () => {
           font-size: 0.9rem;
           color: var(--color-text-soft);
           line-height: 1.7;
+          white-space: pre-wrap;
         }
         .modal-body p { margin-bottom: 12px; }
         .story-block {
