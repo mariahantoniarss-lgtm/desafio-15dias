@@ -4,12 +4,20 @@ import { IDEIAS_CONTEUDO } from '../data/constants';
 const InspirationGrid = () => {
   const [selectedIdea, setSelectedIdea] = useState(null);
 
+  const openModal = (ideia) => {
+    setSelectedIdea(ideia);
+    setTimeout(() => {
+      const modalBox = document.querySelector('.modal-box');
+      if (modalBox) modalBox.scrollTop = 0;
+    }, 10);
+  };
+
   return (
     <section className="animate-fade-up">
-      <div className="section-eyebrow" style={{ color: 'var(--color-rose)' }}>Inspirações diárias</div>
-      <h2 className="section-title">Como vender sem parecer propaganda</h2>
-      <p style={{ fontSize: '0.88rem', color: 'var(--color-text-soft)', marginBottom: '20px' }}>
-        Toque nos cards com borda rosa para ver o roteiro de stories completo da Thaís 👇
+      <div className="section-eyebrow" style={{ color: '#C9A96E' }}>Inspirações diárias</div>
+      <h2 className="section-title">Nível 2 — Do Relacionamento à Venda</h2>
+      <p style={{ fontSize: '0.88rem', color: '#6B4A52', marginBottom: '20px', fontFamily: 'var(--font-body)' }}>
+        Toque nos cards com borda inferior dourada para ver o roteiro de stories completo 👇
       </p>
 
       <div className="ideias-grid">
@@ -17,7 +25,7 @@ const InspirationGrid = () => {
           <div
             key={idx}
             className={`ideia-card ${ideia.hasModal ? 'has-modal' : ''}`}
-            onClick={() => ideia.hasModal && setSelectedIdea(ideia)}
+            onClick={() => ideia.hasModal && openModal(ideia)}
           >
             <div className="ideia-emoji">{ideia.emoji}</div>
             <div className="ideia-titulo">{ideia.titulo}</div>
@@ -53,64 +61,61 @@ const InspirationGrid = () => {
       )}
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .section-title {
-          font-family: var(--font-secondary);
-          font-size: clamp(1.4rem, 4vw, 1.9rem);
-          font-weight: 700;
-          color: var(--color-vinho);
-          line-height: 1.2;
-          margin-bottom: 24px;
-        }
         .ideias-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
           gap: 12px;
         }
         .ideia-card {
-          background: white;
-          border: 1px solid var(--border-light);
-          border-radius: var(--radius-md);
-          padding: 16px;
+          background: #FFFFFF;
+          border: 1px solid #E8D5A3;
+          border-radius: 16px;
+          padding: 18px 16px;
+          box-shadow: 0 2px 12px rgba(107, 39, 55, 0.08);
+          transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
           display: flex;
           flex-direction: column;
-          gap: 4px;
-          cursor: default;
-          transition: all 0.2s;
+          gap: 6px;
         }
         .ideia-card.has-modal {
           cursor: pointer;
-          border-bottom: 3px solid var(--color-rose);
+          border-bottom: 3px solid #C9A96E;
         }
         .ideia-card.has-modal:hover {
-          transform: translateY(-4px);
-          box-shadow: var(--shadow-medium);
-          border-color: var(--color-rose);
+          transform: translateY(-3px);
+          box-shadow: 0 8px 28px rgba(107, 39, 55, 0.16);
+          border-color: #C9A96E;
         }
-        .ideia-emoji { font-size: 1.5rem; }
+        .ideia-emoji { font-size: 1.6rem; }
         .ideia-titulo {
-          font-family: var(--font-secondary);
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: var(--color-vinho);
+          font-family: var(--font-subtitle);
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #6B2737;
           line-height: 1.3;
         }
         .ideia-desc {
-          font-size: 0.78rem;
-          color: var(--color-text-soft);
+          font-family: var(--font-body);
+          font-size: 0.8rem;
+          color: #6B4A52;
           line-height: 1.45;
         }
         .ideia-tap {
-          font-size: 0.7rem;
-          color: var(--color-rose);
+          font-family: var(--font-subtitle);
+          font-size: 11px;
+          color: #C9A96E;
           font-weight: 600;
-          margin-top: 8px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          margin-top: auto;
+          padding-top: 6px;
         }
         
         .modal-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(74, 19, 40, 0.6);
-          backdrop-filter: blur(8px);
+          background: rgba(74, 26, 36, 0.65);
+          backdrop-filter: blur(5px);
           z-index: 1000;
           display: flex;
           align-items: center;
@@ -119,22 +124,23 @@ const InspirationGrid = () => {
           animation: fadeIn 0.3s ease;
         }
         .modal-box {
-          background: white;
-          border-radius: var(--radius-lg);
-          max-width: 500px;
+          background: #FFFFFF;
+          border-radius: 20px;
+          max-width: 520px;
           width: 100%;
           max-height: 85vh;
           overflow-y: auto;
-          padding: 32px 24px;
+          padding: 28px 22px;
           position: relative;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+          box-shadow: 0 20px 60px rgba(74, 26, 36, 0.3);
           animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .modal-close {
           position: absolute;
           top: 16px;
           right: 16px;
-          background: var(--color-rose-light);
+          background: #FDF6EE;
+          border: 1px solid #E8D5A3;
           width: 32px;
           height: 32px;
           border-radius: 50%;
@@ -142,63 +148,108 @@ const InspirationGrid = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: var(--color-vinho);
+          color: #6B2737;
           font-weight: 700;
+          transition: all 0.2s;
+        }
+        .modal-close:hover {
+          background: #E8D5A3;
         }
         .modal-emoji { font-size: 2.5rem; margin-bottom: 8px; }
         .modal-titulo {
-          font-family: var(--font-secondary);
-          font-size: 1.2rem;
-          font-weight: 800;
-          color: var(--color-vinho);
+          font-family: var(--font-title);
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: #6B2737;
           margin-bottom: 4px;
+          line-height: 1.2;
+          border-bottom: 1px solid #E8D5A3;
+          padding-bottom: 12px;
         }
         .modal-tag {
-          font-size: 0.7rem;
+          font-family: var(--font-subtitle);
+          font-size: 0.72rem;
           font-weight: 600;
           letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: var(--color-rose);
+          color: #C9A96E;
           margin-bottom: 20px;
         }
         .modal-body {
-          font-size: 0.9rem;
-          color: var(--color-text-soft);
+          font-family: var(--font-body);
+          font-size: 0.92rem;
+          color: #6B4A52;
           line-height: 1.7;
           white-space: pre-wrap;
         }
         .modal-body p { margin-bottom: 12px; }
         .story-block {
-          background: var(--color-rose-light);
-          border-left: 3px solid var(--color-rose);
+          background: #FDF6EE;
+          border-left: 3px solid #C9A96E;
           border-radius: 0 8px 8px 0;
-          padding: 12px 16px;
+          padding: 10px 14px;
           margin-bottom: 12px;
-          font-size: 0.85rem;
+          font-size: 14px;
           font-style: italic;
-          color: var(--color-text);
+          color: #2C1A20;
         }
         .story-label {
+          font-family: var(--font-subtitle);
           font-style: normal;
-          font-weight: 700;
-          color: var(--color-vinho);
-          font-size: 0.78rem;
+          font-weight: 600;
+          color: #6B2737;
+          font-size: 0.8rem;
           margin-bottom: 4px;
           display: block;
         }
         .modal-dica {
-          background: linear-gradient(135deg, var(--color-vinho), #9B3060);
-          color: white;
-          border-radius: var(--radius-md);
+          background: linear-gradient(135deg, #6B2737, #9B4A5A);
+          color: #FFFFFF;
+          border-radius: 10px;
           padding: 14px 16px;
           margin-top: 20px;
-          font-size: 0.85rem;
+          font-size: 13px;
           font-weight: 500;
           line-height: 1.5;
         }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Responsividade para Modal e Grid */
+        @media (max-width: 640px) {
+          .ideias-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+          }
+          .modal-overlay {
+            padding: 0;
+            align-items: flex-end;
+          }
+          .modal-box {
+            border-radius: 20px 20px 0 0;
+            max-height: 85vh;
+            margin: 0;
+            animation: slideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          }
+        }
+        
+        @media (min-width: 601px) and (max-width: 860px) {
+          .ideias-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        @media (min-width: 861px) {
+          .ideias-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        @keyframes slideUpMobile {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
       ` }} />
     </section>
   );

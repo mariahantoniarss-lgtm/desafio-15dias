@@ -30,10 +30,10 @@ const DailyNotes = () => {
   };
 
   return (
-    <div className="card card-rose animate-fade-up">
-      <div style={{ marginBottom: '16px' }}>
-        <div className="section-eyebrow" style={{ color: 'var(--color-vinho)' }}>Reflexão do dia</div>
-        <div className="section-subtitle">Espaço para anotações</div>
+    <div className="daily-notes-card animate-fade-up">
+      <div style={{ marginBottom: '20px' }}>
+        <div className="section-eyebrow" style={{ color: '#6B2737' }}>Reflexão do dia</div>
+        <h3 className="notes-subtitle">Espaço para anotações</h3>
         <div className="day-label">Dia {activeDay + 1} — {getDayLabel(activeDay)}</div>
       </div>
 
@@ -73,45 +73,31 @@ const DailyNotes = () => {
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .card-rose {
-          background: var(--color-rose-light);
-          border-color: rgba(216, 160, 180, 0.25);
+        .daily-notes-card {
+          background: #FDF6EE;
+          border: 1px solid #E8D5A3;
+          border-radius: 16px;
+          padding: 22px 18px;
+          margin-bottom: 24px;
         }
-        .section-eyebrow {
-          font-family: var(--font-secondary);
-          font-size: 0.68rem;
+        .notes-subtitle {
+          font-family: var(--font-subtitle);
+          font-size: 1.1rem;
           font-weight: 600;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 8px;
-        }
-        .section-eyebrow::before {
-          content: '';
-          width: 20px;
-          height: 2px;
-          background: currentColor;
-          border-radius: 2px;
-        }
-        .section-subtitle {
-          font-family: var(--font-secondary);
-          font-size: 1rem;
-          font-weight: 700;
-          color: var(--color-vinho);
+          color: #6B2737;
         }
         .day-label {
+          font-family: var(--font-body);
           font-size: 0.8rem;
-          color: var(--color-text-soft);
+          color: #A08088;
           margin-top: 4px;
         }
         
         .anot-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 12px;
-          margin-bottom: 16px;
+          grid-template-columns: 1fr;
+          gap: 16px;
+          margin-bottom: 20px;
         }
         .anot-item {
           display: flex;
@@ -119,27 +105,29 @@ const DailyNotes = () => {
           gap: 6px;
         }
         .anot-label {
-          font-family: var(--font-secondary);
-          font-size: 0.78rem;
+          font-family: var(--font-subtitle);
+          font-size: 0.85rem;
           font-weight: 600;
-          color: var(--color-vinho);
+          color: #6B2737;
         }
         .anot-input {
           width: 100%;
-          min-height: 80px;
-          border: 1px solid var(--border-light);
-          border-radius: var(--radius-md);
+          min-height: 90px;
+          background: #FFFFFF;
+          border: 1px solid #E8D5A3;
+          border-radius: 8px;
+          font-family: var(--font-body);
+          font-size: 14px;
+          color: #2C1A20;
           padding: 10px 12px;
-          font-family: var(--font-primary);
-          font-size: 0.85rem;
-          color: var(--color-text);
-          background: var(--color-white);
           resize: vertical;
           outline: none;
-          transition: border-color 0.2s;
+          transition: all 0.25s;
         }
         .anot-input:focus {
-          border-color: var(--color-rose);
+          border-color: #C9A96E;
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
         }
         
         .anot-footer {
@@ -147,30 +135,38 @@ const DailyNotes = () => {
           align-items: center;
           gap: 16px;
           margin-top: 20px;
+          flex-wrap: wrap;
         }
         .btn-salvar {
-          background: var(--color-vinho);
-          color: white;
-          padding: 11px 28px;
-          border-radius: var(--radius-full);
-          font-family: var(--font-secondary);
-          font-size: 0.85rem;
+          background: #6B2737;
+          color: #FFFFFF;
+          border-radius: 40px;
+          font-family: var(--font-subtitle);
           font-weight: 600;
+          padding: 11px 28px;
+          font-size: 0.88rem;
           transition: all 0.2s;
         }
         .btn-salvar:hover {
-          background: var(--color-vinho-light);
+          background: #4A1A24;
           transform: translateY(-1px);
         }
         .anot-salvo {
-          font-size: 0.78rem;
-          color: var(--color-vinho);
+          font-family: var(--font-subtitle);
+          font-size: 0.82rem;
+          color: #6B2737;
           font-weight: 600;
           opacity: 0;
           transition: opacity 0.3s ease;
         }
         .anot-salvo.visible {
           opacity: 1;
+        }
+
+        @media (min-width: 600px) {
+          .anot-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
         }
       ` }} />
     </div>

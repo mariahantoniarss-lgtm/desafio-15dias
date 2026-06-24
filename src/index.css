@@ -1,35 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@300;400;500&display=swap');
-
 :root {
-  /* Cores Principais */
-  --color-vinho: #6D213C;
-  --color-vinho-dark: #4A1328;
-  --color-vinho-light: #8B3050;
-  --color-rose: #D8A0B4;
-  --color-rose-light: #F8EDF1;
-  --color-rose-soft: #FDF5F8;
-  --color-white: #FFFFFF;
-  --color-text: #3A2030;
-  --color-text-soft: #7A5568;
-  --color-gold: #C9904E;
-  --color-gold-soft: #FDF0E3;
+  /* Identidade: Marsala + Dourado + Creme */
+  --marsala:        #6B2737;   /* cor principal — botões, abas ativas, destaques */
+  --marsala-escuro: #4A1A24;   /* hover, cabeçalho, fundo hero */
+  --marsala-suave:  #9B4A5A;   /* estados secundários */
+  --dourado:        #C9A96E;   /* acentos, ícones, bordas decorativas */
+  --dourado-claro:  #E8D5A3;   /* badges, highlights, texto sobre fundo escuro */
+  --creme:          #FDF6EE;   /* fundo geral da página */
+  --creme-escuro:   #F2E8DC;   /* fundo de cards, seções alternadas */
+  --texto-escuro:   #2C1A20;   /* títulos */
+  --texto-medio:    #6B4A52;   /* corpo de texto */
+  --texto-suave:    #A08088;   /* legendas, datas, labels */
+  --branco:         #FFFFFF;
 
-  /* Efeitos e Bordas */
-  --border-light: rgba(109, 33, 60, 0.12);
-  --shadow-soft: 0 4px 24px rgba(109, 33, 60, 0.10);
-  --shadow-medium: 0 8px 32px rgba(109, 33, 60, 0.15);
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  
+  /* Aliases para compatibilidade de componentes antigos */
+  --color-vinho: var(--marsala);
+  --color-vinho-dark: var(--marsala-escuro);
+  --color-vinho-light: var(--marsala-suave);
+  --color-rose: var(--dourado);
+  --color-rose-light: var(--creme-escuro);
+  --color-rose-soft: var(--creme);
+  --color-white: var(--branco);
+  --color-text: var(--texto-escuro);
+  --color-text-soft: var(--texto-medio);
+  --color-gold: var(--dourado);
+  --color-gold-soft: var(--dourado-claro);
+
   /* Tipografia */
-  --font-primary: 'Inter', sans-serif;
-  --font-secondary: 'Poppins', sans-serif;
-  
-  /* Espaçamento e Bordas */
+  --font-title: 'Cormorant Garamond', serif;
+  --font-subtitle: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --font-primary: var(--font-body);
+  --font-secondary: var(--font-subtitle);
+
+  /* Bordas e Sombras */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-full: 40px;
+  --border-light: 1px solid var(--dourado-claro);
+  
+  --shadow-soft: 0 2px 12px rgba(107, 39, 55, 0.08);
+  --shadow-medium: 0 8px 28px rgba(107, 39, 55, 0.16);
 }
 
 *, *::before, *::after {
@@ -43,10 +55,11 @@ html {
 }
 
 body {
-  font-family: var(--font-primary);
-  background: var(--color-rose-soft);
-  color: var(--color-text);
+  font-family: var(--font-body);
+  background-color: var(--creme);
+  color: var(--texto-medio);
   line-height: 1.6;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -56,7 +69,8 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-secondary);
+  font-family: var(--font-subtitle);
+  color: var(--texto-escuro);
 }
 
 button {
@@ -77,30 +91,60 @@ a {
 
 /* Utilitários Visuais */
 .premium-gradient {
-  background: linear-gradient(160deg, var(--color-vinho-dark) 0%, var(--color-vinho) 55%, #9B3060 100%);
-}
-
-.glass-pill {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(10px);
-  padding: 6px 18px;
-  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--marsala-escuro) 0%, var(--marsala) 60%, var(--marsala-suave) 100%);
 }
 
 .card {
-  background: var(--color-white);
-  border: 1px solid var(--border-light);
+  background: var(--branco);
+  border: var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 32px 28px;
+  padding: 24px 20px;
   box-shadow: var(--shadow-soft);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.section-eyebrow {
+  font-family: var(--font-subtitle);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-eyebrow::before {
+  content: '';
+  width: 16px;
+  height: 2px;
+  background: var(--dourado);
+  border-radius: 2px;
+}
+
+.section-title {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--marsala);
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: var(--texto-medio);
+  margin-bottom: 24px;
 }
 
 /* Animações Globais */
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -108,6 +152,22 @@ a {
   }
 }
 
+@keyframes checkPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
 .animate-fade-up {
-  animation: fadeUp 0.8s ease both;
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Responsividade Base */
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+  .card {
+    padding: 20px 16px;
+  }
 }

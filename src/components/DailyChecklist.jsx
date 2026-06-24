@@ -54,7 +54,7 @@ const DailyChecklist = () => {
         </div>
 
         {showMotivacional && (
-          <div className="motivacional animate-fade-up">
+          <div className="motivacional">
             {FRASES_MOTIVACIONAIS[activeDay % FRASES_MOTIVACIONAIS.length]}
           </div>
         )}
@@ -64,35 +64,36 @@ const DailyChecklist = () => {
         .dias-tabs {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
-          margin-bottom: 20px;
+          gap: 6px;
+          margin-bottom: 24px;
         }
         .dia-tab {
-          padding: 6px 14px;
-          border-radius: var(--radius-full);
-          border: 1px solid var(--border-light);
-          background: var(--color-white);
-          font-family: var(--font-secondary);
-          font-size: 0.78rem;
+          background: #FFFFFF;
+          border: 1px solid #E8D5A3;
+          border-radius: 40px;
+          color: #A08088;
+          font-family: var(--font-subtitle);
+          font-size: 12px;
           font-weight: 600;
-          color: var(--color-text-soft);
+          padding: 6px 14px;
+          cursor: pointer;
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .dia-tab:hover {
-          border-color: var(--color-rose);
-          color: var(--color-vinho);
+          border-color: #C9A96E;
+          color: #6B2737;
           transform: translateY(-1px);
         }
         .dia-tab.active {
-          background: var(--color-vinho);
-          color: white;
-          border-color: var(--color-vinho);
-          box-shadow: 0 4px 12px rgba(109, 33, 60, 0.2);
+          background: #6B2737;
+          color: #FFFFFF;
+          border-color: #6B2737;
+          box-shadow: 0 4px 12px rgba(107, 39, 55, 0.25);
         }
         .dia-tab.done {
-          background: var(--color-rose-light);
-          border-color: var(--color-rose);
-          color: var(--color-vinho);
+          background: #FDF6EE;
+          border-color: #C9A96E;
+          color: #6B2737;
         }
         
         .checklist-content {
@@ -102,84 +103,105 @@ const DailyChecklist = () => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 16px;
+          margin-bottom: 18px;
         }
         .dia-titulo {
-          font-family: var(--font-secondary);
-          font-size: 1.1rem;
+          font-family: var(--font-title);
+          font-size: 1.8rem;
           font-weight: 700;
-          color: var(--color-vinho);
+          color: #6B2737;
         }
         .dia-data-badge {
+          font-family: var(--font-subtitle);
           font-size: 0.78rem;
-          color: var(--color-text-soft);
-          background: var(--color-rose-light);
+          font-weight: 600;
+          color: #6B2737;
+          background: #E8D5A3;
           padding: 4px 12px;
           border-radius: var(--radius-full);
         }
         
+        .check-items {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
         .check-item {
           display: flex;
-          align-items: flex-start;
+          align-items: center;
           gap: 14px;
-          padding: 12px 8px;
-          border-bottom: 1px solid var(--color-rose-light);
+          background: #FFFFFF;
+          border: 1px solid #E8D5A3;
+          border-radius: 10px;
+          padding: 13px 14px;
           cursor: pointer;
-          border-radius: var(--radius-sm);
           transition: all 0.2s ease;
         }
-        .check-item:last-child {
-          border-bottom: none;
-        }
+
         .check-item:hover {
-          background: var(--color-rose-soft);
+          border-color: #C9A96E;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(107, 39, 55, 0.05);
         }
+
         .check-box {
           width: 22px;
           height: 22px;
-          border: 2px solid var(--color-rose);
+          border: 2px solid #C9A96E;
           border-radius: 6px;
-          flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
           transition: all 0.2s;
-          margin-top: 1px;
         }
+
+        .check-item.checked {
+          background: #FDF6EE;
+          border-color: #E8D5A3;
+        }
+
         .check-item.checked .check-box {
-          background: var(--color-vinho);
-          border-color: var(--color-vinho);
+          background: linear-gradient(135deg, #6B2737, #9B4A5A);
+          border-color: #6B2737;
+          animation: checkPop 0.3s ease;
         }
+
         .check-item.checked .check-box::after {
           content: '✓';
-          color: white;
+          color: #FFFFFF;
           font-size: 12px;
-          font-weight: 700;
+          font-weight: bold;
         }
+
         .check-label {
-          font-size: 0.9rem;
-          color: var(--color-text);
+          font-family: var(--font-body);
+          font-size: 14px;
+          color: #2C1A20;
           line-height: 1.5;
           transition: all 0.2s;
         }
+
         .check-item.checked .check-label {
-          color: var(--color-text-soft);
+          color: #A08088;
           text-decoration: line-through;
-          opacity: 0.7;
         }
         
         .motivacional {
-          background: linear-gradient(135deg, var(--color-vinho), #9B3060);
-          color: white;
-          border-radius: var(--radius-md);
+          background: linear-gradient(135deg, #4A1A24, #6B2737);
+          border-radius: 14px;
           padding: 18px 20px;
-          margin-top: 20px;
-          font-family: var(--font-secondary);
-          font-size: 0.95rem;
+          border-left: 3px solid #C9A96E;
+          font-family: var(--font-subtitle);
+          font-size: 15px;
           font-weight: 500;
           font-style: italic;
+          color: #FFFFFF;
+          margin-top: 24px;
+          box-shadow: 0 4px 16px rgba(74, 26, 36, 0.25);
+          animation: fadeUp 0.4s ease;
           text-align: center;
-          box-shadow: 0 4px 16px rgba(109, 33, 60, 0.2);
         }
 
         .scale-in {

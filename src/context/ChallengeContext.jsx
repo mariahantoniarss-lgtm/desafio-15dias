@@ -28,6 +28,17 @@ export const ChallengeProvider = ({ children }) => {
     }));
   };
 
+  const toggleWeeklyCheck = (goalId, itemId) => {
+    const goalKey = `weekly_${goalId}`;
+    setState(prev => ({
+      ...prev,
+      [goalKey]: {
+        ...(prev[goalKey] || {}),
+        [itemId]: !(prev[goalKey]?.[itemId])
+      }
+    }));
+  };
+
   const saveNotes = (dayIdx, notes) => {
     const key = `anot_dia_${dayIdx}`;
     localStorage.setItem(key, JSON.stringify(notes));
@@ -39,7 +50,7 @@ export const ChallengeProvider = ({ children }) => {
   };
 
   const resetChallenge = () => {
-    localStorage.removeItem('desafio_friends_v2');
+    localStorage.removeItem(STORAGE_KEY);
     for (let i = 0; i < 15; i++) {
       localStorage.removeItem(`anot_dia_${i}`);
     }
@@ -53,6 +64,7 @@ export const ChallengeProvider = ({ children }) => {
       activeDay,
       setActiveDay,
       toggleCheck,
+      toggleWeeklyCheck,
       saveNotes,
       getNotes,
       resetChallenge

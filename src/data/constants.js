@@ -1,36 +1,150 @@
 export const TOTAL_DIAS = 15;
-export const START_DATE = '2026-06-09T00:00:00';
-export const STORAGE_KEY = 'desafio_friends_v2';
+export const START_DATE = '2026-06-23T00:00:00';
+export const STORAGE_KEY = 'desafio_friends_v2_nivel2';
 
 export const ITENS_CHECKLIST = [
-  { id: 'stories', label: '15 stories publicados' },
-  { id: 'interacao', label: '2 interações feitas (enquete, caixinha, pergunta ou reação)' },
-  { id: 'venda', label: '1 ação de venda realizada' },
-  { id: 'grupo', label: 'Participei do grupo (pergunta, vitória ou dificuldade)' },
-  { id: 'colega', label: 'Incentivei 2 colegas hoje' },
+  { id: 'stories', label: 'Publiquei 15 stories hoje' },
+  { id: 'interacao', label: 'Fiz 2 interações (enquete, caixinha, quiz ou reação)' },
+  { id: 'venda', label: 'Fiz 1 ação de venda (produto, benefício, transformação, resultado ou indicação)' },
+  { id: 'educativo', label: 'Postei 1 conteúdo educativo (dica, erro comum, curiosidade, mito ou verdade)' },
+  { id: 'conversas', label: 'Iniciei 3 conversas novas (Direct, resposta de story, comentário)' },
+  { id: 'apoio', label: 'Apoiei 2 Friends (curtir + comentar + salvar + compartilhar)' },
 ];
 
 export const FRASES_MOTIVACIONAIS = [
-  "Você apareceu hoje. Isso já faz diferença. 💜",
-  "Constância vence talento sem ação.",
-  "Uma pequena ação hoje evita grandes arrependimentos amanhã.",
-  "Você está construindo algo maior que você imagina.",
-  "Feito é melhor do que perfeito.",
-  "Cada story que você posta é uma semente. Confie no processo.",
-  "Não é sobre ter disposição. É sobre aparecer mesmo sem ela.",
-  "Você não precisa ser a melhor. Você precisa ser consistente.",
-  "Orgulhe-se. Você fez mais do que 90% das pessoas hoje.",
-  "Pequenos passos repetidos criam resultados que parecem milagres.",
-  "A motivação segue a ação, não o contrário.",
-  "Você está mais próxima do que parecia ontem.",
-  "Cada checklist marcado é uma prova de que você é capaz.",
-  "O dia difícil que você encarou hoje é o que te diferencia.",
-  "Ninguém vê a construção. Todo mundo vai ver o resultado.",
-  "Continue. Amanhã você agradece por não ter parado hoje.",
-  "Você já chegou até aqui. Isso não é pouca coisa.",
-  "O Time Friends te vê crescer. Nós nos orgulhamos de você. ",
-  "Ação gera resultado. Você provou isso hoje.",
-  "Parabéns. Você é a prova de que comprometimento existe.",
+  "Quem aparece todo dia cria familiaridade. Familiaridade cria confiança. Confiança cria venda.",
+  "Você não está vendendo produto. Você está ajudando alguém a resolver um problema que ela já tem.",
+  "Uma pergunta bem feita abre mais portas do que dez posts de venda.",
+  "Ensine antes de vender. Sempre.",
+  "Seu Direct é uma máquina de vendas que você ainda não está usando completamente.",
+  "A pessoa que confia em você não pesquisa concorrente. Ela te pergunta direto.",
+  "Fale do problema. O produto aparece como solução natural.",
+  "Prova social vale mais do que qualquer legenda bem escrita.",
+  "Sua seguidora precisa ver você várias vezes antes de comprar. Você apareceu quantas vezes essa semana?",
+  "Conteúdo educativo não distrai da venda. Ele prepara para ela.",
+  "Indicar um produto que funciona não é ser chata. É ser útil.",
+  "Não subestime as pequenas conversas. Elas constroem o relacionamento que vende.",
+  "Mostre o problema. Mostre a solução. Mostre o resultado. Nessa ordem.",
+  "Você já provou que consegue aparecer. Agora apareça com intenção.",
+  "Vender com orgulho é diferente de empurrar venda. Você está do lado certo.",
+  "Coragem não é ausência de medo. É agir mesmo com ele.",
+  "Quando o time cresce, todas crescem.",
+  "Você não precisa ser especialista. Precisa compartilhar o que aprendeu.",
+  "Venda é consequência. Relacionamento é o trabalho.",
+  "Cada vez que você indica um produto que acredita, você está poupando alguém de comprar errado.",
+];
+
+export const MISSIONS = [
+  {
+    id: 1,
+    title: "Missão 1 — Continuar Aparecendo",
+    desc: "15 stories por dia / 2 interações por dia / 1 ação de venda por dia / 6 Reels durante a quinzena (3 por semana) — do seu nicho ou sobre produtos Ybera",
+    badge: "Essencial"
+  },
+  {
+    id: 2,
+    title: "Missão 2 — Autoridade Todos os Dias",
+    desc: "1 conteúdo educativo por dia. Pode ser: dica capilar, erro comum, curiosidade, cronograma, cuidado diário, explicação de produto, mito ou verdade. Regra: não vender primeiro. Ensinar primeiro. Quem ensina gera confiança. Quem gera confiança vende.",
+    badge: "Confiança"
+  },
+  {
+    id: 3,
+    title: "Missão 3 — Despertar Desejo",
+    desc: "(Quinzenal — 10 conteúdos) Focar no problema, não no produto. ❌ 'Esse shampoo é maravilhoso.' ✅ 'Seu cabelo quebra muito?'",
+    badge: "Estratégia"
+  },
+  {
+    id: 4,
+    title: "Missão 4 — Conversas Geram Vendas",
+    desc: "3 conversas novas por dia. Direct, resposta de story, resposta de enquete, agradecimento de comentário. Nenhuma venda acontece sem conversa. O Direct é uma das maiores ferramentas de venda que você tem.",
+    badge: "Relacionamento"
+  },
+  {
+    id: 5,
+    title: "Missão 5 — Prova Social",
+    desc: "(Quinzenal — 5 provas) Resultado pessoal, antes e depois autorizado, depoimento, print, experiência própria, evolução do cabelo. As pessoas acreditam mais em provas do que em promessas.",
+    badge: "Validação"
+  },
+  {
+    id: 6,
+    title: "Missão 6 — Ação Comercial",
+    desc: "(Quinzenal — 10 convites) Abrir portas, não empurrar venda. 'Posso te ajudar a montar uma rotina?' / 'Qual é sua maior dificuldade com o cabelo?' / 'Quer que eu te indique um produto?'",
+    badge: "Vendas"
+  },
+  {
+    id: 7,
+    title: "Missão 7 — Fortalecendo o Time",
+    desc: "Apoiar 2 Friends por dia: curtir + comentar + salvar + compartilhar. Quando o Time cresce, todas crescem.",
+    badge: "Comunidade"
+  },
+  {
+    id: 8,
+    title: "Bônus — Desafio Coragem",
+    desc: "(Quinzenal — 5 vezes) Escolha o que te trava e faça 5 vezes durante a quinzena. Pode ser: aparecer sem filtro, gravar falando, mostrar o rosto, fazer CTA, gravar Reels, pedir interação.",
+    badge: "Crescimento"
+  }
+];
+
+export const METAS_QUINZENAIS = [
+  {
+    id: 'bloco1',
+    title: 'Bloco 1 — Missão 1 bônus: Reels',
+    subtitle: 'Meta: 6 Reels publicados (3 por semana)',
+    rule: 'Pode ser: do seu nicho ou sobre produtos Ybera',
+    items: [
+      { id: 'reel1', label: 'Reel 1' }, { id: 'reel2', label: 'Reel 2' },
+      { id: 'reel3', label: 'Reel 3' }, { id: 'reel4', label: 'Reel 4' },
+      { id: 'reel5', label: 'Reel 5' }, { id: 'reel6', label: 'Reel 6' },
+    ]
+  },
+  {
+    id: 'bloco2',
+    title: 'Bloco 2 — Missão 3: Despertar Desejo',
+    subtitle: 'Meta: 10 conteúdos focados no problema, não no produto (podem ser Reels ou Stories)',
+    rule: 'Regra: em vez de "Esse shampoo é maravilhoso" → "Seu cabelo quebra muito?"',
+    items: [
+      { id: 'desejo1', label: 'Conteúdo 1' }, { id: 'desejo2', label: 'Conteúdo 2' },
+      { id: 'desejo3', label: 'Conteúdo 3' }, { id: 'desejo4', label: 'Conteúdo 4' },
+      { id: 'desejo5', label: 'Conteúdo 5' }, { id: 'desejo6', label: 'Conteúdo 6' },
+      { id: 'desejo7', label: 'Conteúdo 7' }, { id: 'desejo8', label: 'Conteúdo 8' },
+      { id: 'desejo9', label: 'Conteúdo 9' }, { id: 'desejo10', label: 'Conteúdo 10' },
+    ]
+  },
+  {
+    id: 'bloco3',
+    title: 'Bloco 3 — Missão 5: Prova Social',
+    subtitle: 'Meta: 5 provas sociais publicadas',
+    rule: 'Pode ser: resultado pessoal, antes e depois autorizado, depoimento, print, experiência própria, evolução do cabelo',
+    items: [
+      { id: 'prova1', label: 'Prova 1' }, { id: 'prova2', label: 'Prova 2' },
+      { id: 'prova3', label: 'Prova 3' }, { id: 'prova4', label: 'Prova 4' },
+      { id: 'prova5', label: 'Prova 5' },
+    ]
+  },
+  {
+    id: 'bloco4',
+    title: 'Bloco 4 — Missão 6: Ação Comercial',
+    subtitle: 'Meta: 10 convites para conversa',
+    rule: 'Ex: "Posso te ajudar a montar uma rotina?" / "Qual é sua maior dificuldade com o cabelo?" / "Quer que eu te indique um produto?" / "Posso te explicar a diferença?"',
+    items: [
+      { id: 'convite1', label: 'Convite 1' }, { id: 'convite2', label: 'Convite 2' },
+      { id: 'convite3', label: 'Convite 3' }, { id: 'convite4', label: 'Convite 4' },
+      { id: 'convite5', label: 'Convite 5' }, { id: 'convite6', label: 'Convite 6' },
+      { id: 'convite7', label: 'Convite 7' }, { id: 'convite8', label: 'Convite 8' },
+      { id: 'convite9', label: 'Convite 9' }, { id: 'convite10', label: 'Convite 10' },
+    ]
+  },
+  {
+    id: 'bloco5',
+    title: 'Bloco 5 — Bônus Coragem',
+    subtitle: 'Meta: 5 execuções do que te trava',
+    rule: 'Pode ser: aparecer sem filtro, gravar falando, mostrar o rosto, fazer CTA, gravar Reels, pedir interação',
+    items: [
+      { id: 'coragem1', label: 'Coragem 1' }, { id: 'coragem2', label: 'Coragem 2' },
+      { id: 'coragem3', label: 'Coragem 3' }, { id: 'coragem4', label: 'Coragem 4' },
+      { id: 'coragem5', label: 'Coragem 5' },
+    ]
+  }
 ];
 
 export const IDEIAS_CONTEUDO = [
@@ -109,7 +223,7 @@ export const IDEIAS_CONTEUDO = [
       titulo: 'Máscara Resistência Liso Perfeito',
       tag: 'Manutenção — Ybera Paris',
       body: [
-        { type: 'text', content: '**O que é?**\nMáscara de tratamento para manter cabelos lisos hidratados e nutridos.' },
+        { type: 'text', content: '**O que é?**\nMáscara de treatment para manter cabelos lisos hidratados e nutridos.' },
         { type: 'text', content: '**Benefícios:**\n✨ Hidrata. ✨ Nutre. ✨ Reduz frizz. ✨ Deixa os fios alinhados.' },
         { type: 'story', label: 'Story 1', content: '"Muita gente acha que quem faz progressiva não precisa tratar o cabelo. Pelo contrário! Essa máscara ajuda a manter o liso bonito."' },
         { type: 'story', label: 'Story 2', content: '"Ela hidrata, nutre e deixa aquele efeito soltinho e brilhante que todo mundo gosta."' }
@@ -325,7 +439,7 @@ export const IDEIAS_CONTEUDO = [
     }
   },
   {
-    emoji: ' Coconut', titulo: 'Terra Coco',
+    emoji: '🥥', titulo: 'Terra Coco',
     desc: 'O poder nutritivo do coco para o brilho e maciez.',
     hasModal: true,
     modalContent: {
