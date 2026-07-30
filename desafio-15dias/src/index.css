@@ -1,0 +1,173 @@
+:root {
+  /* Identidade: Marsala + Dourado + Creme */
+  --marsala:        #6B2737;   /* cor principal — botões, abas ativas, destaques */
+  --marsala-escuro: #4A1A24;   /* hover, cabeçalho, fundo hero */
+  --marsala-suave:  #9B4A5A;   /* estados secundários */
+  --dourado:        #C9A96E;   /* acentos, ícones, bordas decorativas */
+  --dourado-claro:  #E8D5A3;   /* badges, highlights, texto sobre fundo escuro */
+  --creme:          #FDF6EE;   /* fundo geral da página */
+  --creme-escuro:   #F2E8DC;   /* fundo de cards, seções alternadas */
+  --texto-escuro:   #2C1A20;   /* títulos */
+  --texto-medio:    #6B4A52;   /* corpo de texto */
+  --texto-suave:    #A08088;   /* legendas, datas, labels */
+  --branco:         #FFFFFF;
+
+  /* Aliases para compatibilidade de componentes antigos */
+  --color-vinho: var(--marsala);
+  --color-vinho-dark: var(--marsala-escuro);
+  --color-vinho-light: var(--marsala-suave);
+  --color-rose: var(--dourado);
+  --color-rose-light: var(--creme-escuro);
+  --color-rose-soft: var(--creme);
+  --color-white: var(--branco);
+  --color-text: var(--texto-escuro);
+  --color-text-soft: var(--texto-medio);
+  --color-gold: var(--dourado);
+  --color-gold-soft: var(--dourado-claro);
+
+  /* Tipografia */
+  --font-title: 'Cormorant Garamond', serif;
+  --font-subtitle: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --font-primary: var(--font-body);
+  --font-secondary: var(--font-subtitle);
+
+  /* Bordas e Sombras */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 40px;
+  --border-light: 1px solid var(--dourado-claro);
+  
+  --shadow-soft: 0 2px 12px rgba(107, 39, 55, 0.08);
+  --shadow-medium: 0 8px 28px rgba(107, 39, 55, 0.16);
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--creme);
+  color: var(--texto-medio);
+  line-height: 1.6;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-subtitle);
+  color: var(--texto-escuro);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Utilitários Visuais */
+.premium-gradient {
+  background: linear-gradient(135deg, var(--marsala-escuro) 0%, var(--marsala) 60%, var(--marsala-suave) 100%);
+}
+
+.card {
+  background: var(--branco);
+  border: var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.section-eyebrow {
+  font-family: var(--font-subtitle);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-eyebrow::before {
+  content: '';
+  width: 16px;
+  height: 2px;
+  background: var(--dourado);
+  border-radius: 2px;
+}
+
+.section-title {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--marsala);
+  line-height: 1.15;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  font-size: 0.93rem;
+  font-weight: 500;
+  color: var(--texto-medio);
+  margin-bottom: 24px;
+}
+
+/* Animações Globais */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes checkPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Responsividade Base */
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+  .card {
+    padding: 20px 16px;
+  }
+}
