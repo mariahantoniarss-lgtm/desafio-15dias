@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "date-fns": "^4.4.0",
+    "node-ical": "^0.27.1",
     "react": "^19.2.6",
+    "react-calendar": "^6.0.1",
     "react-dom": "^19.2.6"
   },
   "devDependencies": {

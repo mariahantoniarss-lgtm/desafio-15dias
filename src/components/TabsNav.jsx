@@ -2,9 +2,10 @@ import React from 'react';
 
 const TabsNav = ({ activeTab, onTabChange }) => {
   const tabs = [
-    { id: 'diario', label: 'DIÁRIO', emoji: '📅' },
+    { id: 'diario', label: 'DIÁRIO', emoji: '📝' },
     { id: 'quinzenal', label: 'QUINZENAL', emoji: '🎯' },
     { id: 'produtos', label: 'PRODUTOS', emoji: '🧴' },
+    { id: 'calendario', label: 'AGENDA', emoji: '🗓️' },
   ];
 
   return (
@@ -77,7 +78,7 @@ const TabsNav = ({ activeTab, onTabChange }) => {
           .tabs-nav {
             margin: 0 -16px 24px;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
             width: 100vw;
             left: 0;
             top: 36px;

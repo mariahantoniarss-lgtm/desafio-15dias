@@ -11,6 +11,7 @@ import InspirationGrid from './components/InspirationGrid';
 import FinalSection from './components/FinalSection';
 import TabsNav from './components/TabsNav';
 import WeeklyGoals from './components/WeeklyGoals';
+import CalendarFriends from './components/CalendarFriends';
 
 function App() {
   const [activeTab, setActiveTab] = useState('diario');
@@ -57,6 +58,14 @@ function App() {
             <div className="tab-content animate-fade-in">
               <section id="inspiration">
                 <InspirationGrid />
+              </section>
+            </div>
+          )}
+
+          {activeTab === 'calendario' && (
+            <div className="tab-content animate-fade-in">
+              <section id="calendar">
+                <CalendarFriends />
               </section>
             </div>
           )}
