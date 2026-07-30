@@ -48,24 +48,89 @@ export default async function handler(req, res) {
     const data = ical.parseICS(icsText);
 
     const events = [];
+    
+    // Define window for recurrences (e.g., 3 months ago to 1 year ahead)
+    const rangeStart = new Date();
+    rangeStart.setMonth(rangeStart.getMonth() - 3);
+    const rangeEnd = new Date();
+    rangeEnd.setFullYear(rangeEnd.getFullYear() + 1);
+
     for (const key in data) {
+      if (!data.hasOwnProperty(key)) continue;
+      
       const ev = data[key];
       if (ev.type === 'VTIMEZONE') continue;
       if (ev.type !== 'VEVENT') continue;
 
-      // Ensure start/end are ISO strings
-      const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
-      const end = ev.end instanceof Date ? ev.end : new Date(ev.end);
+      // Handle recurrent events
+      if (typeof ev.rrule !== 'undefined') {
+        // Find all occurrences within our date range
+        const dates = ev.rrule.between(rangeStart, rangeEnd);
+        
+        if (dates.length > 0) {
+          for (const i in dates) {
+            const date = dates[i];
+            let curEvent = ev;
+            let showRecurrence = true;
+            
+            // Safely get start/end differences
+            const originalStart = ev.start instanceof Date ? ev.start : new Date(ev.start);
+            const originalEnd = ev.end instanceof Date ? ev.end : new Date(ev.end);
+            let curDuration = originalEnd.getTime() - originalStart.getTime();
+            
+            let startDate = date;
 
-      events.push({
-        id: ev.uid || key,
-        summary: ev.summary || '',
-        description: ev.description || '',
-        location: ev.location || '',
-        start: start.toISOString(),
-        end: end.toISOString(),
-        category: classifyEvent(ev.summary || '')
-      });
+            // Check for exceptions (exdate)
+            // exdate keys are usually YYYY-MM-DD
+            const dateKey = date.toISOString().substring(0, 10);
+            if (ev.exdate && (ev.exdate[dateKey] || ev.exdate[date.toISOString()])) {
+              showRecurrence = false;
+            }
+
+            // Check for modified recurrences (overrides)
+            if (ev.recurrences) {
+              if (ev.recurrences[date.toISOString()]) {
+                curEvent = ev.recurrences[date.toISOString()];
+                startDate = curEvent.start instanceof Date ? curEvent.start : new Date(curEvent.start);
+                const eEnd = curEvent.end instanceof Date ? curEvent.end : new Date(curEvent.end);
+                curDuration = eEnd.getTime() - startDate.getTime();
+              } else if (ev.recurrences[dateKey]) {
+                curEvent = ev.recurrences[dateKey];
+                startDate = curEvent.start instanceof Date ? curEvent.start : new Date(curEvent.start);
+                const eEnd = curEvent.end instanceof Date ? curEvent.end : new Date(curEvent.end);
+                curDuration = eEnd.getTime() - startDate.getTime();
+              }
+            }
+
+            if (showRecurrence) {
+              const endDate = new Date(startDate.getTime() + curDuration);
+              events.push({
+                id: `${curEvent.uid || key}-${date.getTime()}`,
+                summary: curEvent.summary || '',
+                description: curEvent.description || '',
+                location: curEvent.location || '',
+                start: startDate.toISOString(),
+                end: endDate.toISOString(),
+                category: classifyEvent(curEvent.summary || '')
+              });
+            }
+          }
+        }
+      } else {
+        // Normal, non-recurrent event
+        const start = ev.start instanceof Date ? ev.start : new Date(ev.start);
+        const end = ev.end instanceof Date ? ev.end : new Date(ev.end);
+
+        events.push({
+          id: ev.uid || key,
+          summary: ev.summary || '',
+          description: ev.description || '',
+          location: ev.location || '',
+          start: start.toISOString(),
+          end: end.toISOString(),
+          category: classifyEvent(ev.summary || '')
+        });
+      }
     }
 
     // Update cache
