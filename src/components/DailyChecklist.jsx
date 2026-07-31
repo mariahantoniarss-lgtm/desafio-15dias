@@ -1,155 +1,338 @@
-import React from 'react';
-import { useChallenge } from '../context/ChallengeContext';
-import { ITENS_CHECKLIST, FRASES_MOTIVACIONAIS, START_DATE } from '../data/constants';
-import { getDadosMesAtual, getFrasePorDia } from '../data/frases';
+import React, { useState } from 'react';
+import { useChallenge, getSPDateInfo } from '../context/ChallengeContext';
+import { ITENS_CHECKLIST } from '../data/constants';
 
 const DailyChecklist = () => {
-  const { state, activeDay, setActiveDay, toggleCheck } = useChallenge();
-  const { totalDias } = getDadosMesAtual();
+  const { state, activeDate, setActiveDate, toggleCheck, getMonthData } = useChallenge();
+  
+  // Data atual do sistema
+  const todayInfo = getSPDateInfo();
+  
+  // Data de controle da navegação do calendário (inicia no mês da activeDate)
+  const [navDate, setNavDate] = useState(() => {
+    const parts = activeDate.split('-');
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    return new Date(y, m - 1, 1);
+  });
 
-  const isDayDone = (dayIdx) => {
-    const dayData = state[`dia_${dayIdx}`] || {};
-    return ITENS_CHECKLIST.every(item => dayData[item.id]);
+  const year = navDate.getFullYear();
+  const month = navDate.getMonth(); // 0 a 11
+
+  const nomesMeses = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+  const monthName = nomesMeses[month];
+  
+  const totalDays = new Date(year, month + 1, 0).getDate();
+  const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Domingo
+
+  const prevMonth = () => {
+    setNavDate(new Date(year, month - 1, 1));
   };
 
-  const getDayLabel = (dayIdx) => {
-    // Pegar a data inicial do mês atual
-    const { ano } = getDadosMesAtual();
-    const dateStr = new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" });
-    const hoje = new Date(dateStr);
-    const date = new Date(ano, hoje.getMonth(), dayIdx + 1);
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  const nextMonth = () => {
+    setNavDate(new Date(year, month + 1, 1));
   };
 
-  const currentDayData = state[`dia_${activeDay}`] || {};
-  const showMotivacional = isDayDone(activeDay);
+  const getDayKey = (dayNum) => {
+    const mm = String(month + 1).padStart(2, '0');
+    const dd = String(dayNum).padStart(2, '0');
+    return `${year}-${mm}-${dd}`;
+  };
+
+  // Funções de verificação de datas
+  const isDateToday = (dayNum) => getDayKey(dayNum) === todayInfo.dateKey;
+  const isDateFuture = (dayNum) => getDayKey(dayNum) > todayInfo.dateKey;
+  const isDateSelected = (dayNum) => getDayKey(dayNum) === activeDate;
+
+  // Obter quantidade de tarefas concluídas no dia
+  const getCompletedCountForDay = (dayNum) => {
+    const dayKey = getDayKey(dayNum);
+    const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+    const monthData = getMonthData(monthKey);
+    const dayData = monthData.tarefasPorData[dayKey] || {};
+    return ITENS_CHECKLIST.filter(item => dayData[item.id]).length;
+  };
+
+  // Rótulo descritivo para leitores de tela
+  const getAriaLabel = (dayNum) => {
+    const dayKey = getDayKey(dayNum);
+    const count = getCompletedCountForDay(dayNum);
+    const dateFormatted = `${dayNum} de ${monthName} de ${year}`;
+    
+    if (dayKey > todayInfo.dateKey) {
+      return `${dateFormatted}, data futura, indisponível.`;
+    }
+    
+    let statusText = "não iniciado";
+    if (count === 6) {
+      statusText = "concluído";
+    } else if (count > 0) {
+      statusText = `parcialmente concluído, ${count} de 6 tarefas.`;
+    }
+    
+    const todayMarker = dayKey === todayInfo.dateKey ? " (Hoje)" : "";
+    return `${dateFormatted}${todayMarker}, status: ${statusText}`;
+  };
+
+  // Renderizar o dia selecionado atualmente
+  const selectedParts = activeDate.split('-');
+  const selectedDayLabel = `${parseInt(selectedParts[2], 10)} de ${nomesMeses[parseInt(selectedParts[1], 10) - 1]} de ${selectedParts[0]}`;
+  
+  const monthKeyOfActiveDate = activeDate.substring(0, 7);
+  const activeMonthData = getMonthData(monthKeyOfActiveDate);
+  const currentDayData = activeMonthData.tarefasPorData[activeDate] || {};
+  const completedCount = ITENS_CHECKLIST.filter(item => currentDayData[item.id]).length;
 
   return (
     <div className="checklist-container animate-fade-up">
-      <div className="dias-tabs">
-        {Array.from({ length: totalDias }).map((_, i) => (
-          <button
-            key={i}
-            className={`dia-tab ${activeDay === i ? 'active' : ''} ${isDayDone(i) ? 'done' : ''}`}
-            onClick={() => setActiveDay(i)}
-          >
-            Dia {i + 1}
-            {isDayDone(i) && ' ✓'}
-          </button>
-        ))}
-      </div>
-
-      <div className="checklist-content scale-in">
-        <div className="dia-header">
-          <div className="dia-titulo">Dia {activeDay + 1}</div>
-          <div className="dia-data-badge">{getDayLabel(activeDay)}</div>
+      {/* Calendário Mensal */}
+      <div className="calendar-card">
+        <div className="calendar-nav">
+          <button onClick={prevMonth} aria-label="Mês anterior" className="nav-arrow">◀</button>
+          <span className="calendar-month-title">{monthName} {year}</span>
+          <button onClick={nextMonth} aria-label="Próximo mês" className="nav-arrow">▶</button>
         </div>
 
-        <div className="check-items">
-          {ITENS_CHECKLIST.map(item => (
-            <div
-              key={item.id}
-              className={`check-item ${currentDayData[item.id] ? 'checked' : ''}`}
-              onClick={() => toggleCheck(activeDay, item.id)}
-            >
-              <div className="check-box"></div>
-              <span className="check-label">{item.label}</span>
-            </div>
+        <div className="calendar-grid-header">
+          {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => (
+            <div key={i} className="grid-header-cell" aria-hidden="true">{d}</div>
           ))}
         </div>
 
-        {showMotivacional && (
-          <div className="motivacional">
-            {getFrasePorDia(activeDay + 1)}
+        <div className="calendar-grid-body">
+          {/* Espaços vazios antes do 1º dia */}
+          {Array.from({ length: firstDayIndex }).map((_, i) => (
+            <div key={`empty-${i}`} className="grid-cell empty" />
+          ))}
+
+          {/* Dias reais do mês */}
+          {Array.from({ length: totalDays }).map((_, i) => {
+            const dayNum = i + 1;
+            const key = getDayKey(dayNum);
+            const future = isDateFuture(dayNum);
+            const selected = isDateSelected(dayNum);
+            const today = isDateToday(dayNum);
+            const completed = getCompletedCountForDay(dayNum);
+
+            let dayClass = "day-cell";
+            if (future) dayClass += " future disabled";
+            else if (selected) dayClass += " selected";
+            else if (completed === 6) dayClass += " all-done";
+            else if (completed > 0) dayClass += " partial";
+            else dayClass += " empty-tasks";
+
+            if (today) dayClass += " today";
+
+            return (
+              <button
+                key={dayNum}
+                className={dayClass}
+                disabled={future}
+                onClick={() => setActiveDate(key)}
+                aria-label={getAriaLabel(dayNum)}
+                aria-pressed={selected}
+              >
+                <span className="day-number">{dayNum}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Legenda do Calendário */}
+        <div className="calendar-legend" aria-hidden="true">
+          <div className="legend-item"><span className="legend-color color-empty"></span> Vazio</div>
+          <div className="legend-item"><span className="legend-color color-partial"></span> Parcial</div>
+          <div className="legend-item"><span className="legend-color color-done"></span> Completo</div>
+          <div className="legend-item"><span className="legend-color color-selected"></span> Selecionado</div>
+          <div className="legend-item"><span className="legend-color color-today"></span> Hoje</div>
+        </div>
+      </div>
+
+      {/* Checklist da Data Selecionada */}
+      <div className="checklist-content scale-in" style={{ marginTop: '32px' }}>
+        <div className="dia-header">
+          <h2 className="dia-titulo">{selectedDayLabel}</h2>
+          <div className="dia-data-badge">
+            {completedCount === 6 
+              ? "Completo 💜" 
+              : `${completedCount} de 6`}
           </div>
-        )}
+        </div>
+
+        <div className="check-items" role="group" aria-label={`Lista de tarefas para ${selectedDayLabel}`}>
+          {ITENS_CHECKLIST.map(item => {
+            const isChecked = currentDayData[item.id] || false;
+            return (
+              <label 
+                key={item.id} 
+                className={`check-item ${isChecked ? 'checked' : ''}`}
+                style={{ cursor: 'pointer' }}
+              >
+                <input
+                  type="checkbox"
+                  className="real-checkbox"
+                  checked={isChecked}
+                  onChange={() => toggleCheck(activeDate, item.id)}
+                  aria-label={item.label}
+                />
+                <div className="check-box" aria-hidden="true">
+                  {isChecked && <span className="check-symbol">✓</span>}
+                </div>
+                <span className="check-label">{item.label}</span>
+              </label>
+            );
+          })}
+        </div>
+
+        <div className="checklist-summary-msg" style={{ marginTop: '24px', textAlign: 'center' }}>
+          {completedCount === 6 ? (
+            <div className="status-msg-box done animate-fade-in">
+              Dia completo 💜 Você cumpriu seus compromissos de hoje.
+            </div>
+          ) : (
+            <div className="status-msg-box partial">
+              Hoje: {completedCount} de 6 tarefas concluídas.
+            </div>
+          )}
+        </div>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .dias-tabs {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin-bottom: 24px;
-        }
-        .dia-tab {
+        .calendar-card {
           background: #FFFFFF;
           border: 1px solid #E8D5A3;
-          border-radius: 40px;
-          color: #A08088;
-          font-family: var(--font-subtitle);
-          font-size: 12px;
-          font-weight: 600;
-          padding: 6px 14px;
-          cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 20px;
+          padding: 20px;
+          box-shadow: var(--shadow-soft);
         }
-        .dia-tab:hover {
-          border-color: #C9A96E;
-          color: #6B2737;
-          transform: translateY(-1px);
-        }
-        .dia-tab.active {
-          background: #6B2737;
-          color: #FFFFFF;
-          border-color: #6B2737;
-          box-shadow: 0 4px 12px rgba(107, 39, 55, 0.25);
-        }
-        .dia-tab.done {
-          background: #FDF6EE;
-          border-color: #C9A96E;
-          color: #6B2737;
-        }
-        
-        .checklist-content {
-          margin-top: 24px;
-        }
-        .dia-header {
+        .calendar-nav {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 18px;
+          margin-bottom: 20px;
         }
-        .dia-titulo {
-          font-family: var(--font-title);
-          font-size: 1.8rem;
+        .calendar-month-title {
+          font-family: var(--font-subtitle);
+          font-size: 1.15rem;
           font-weight: 700;
           color: #6B2737;
         }
-        .dia-data-badge {
-          font-family: var(--font-subtitle);
-          font-size: 0.78rem;
-          font-weight: 600;
+        .nav-arrow {
+          background: none;
+          border: none;
           color: #6B2737;
-          background: #E8D5A3;
-          padding: 4px 12px;
-          border-radius: var(--radius-full);
+          cursor: pointer;
+          font-size: 1.1rem;
+          padding: 8px 12px;
+          border-radius: 8px;
+          transition: background 0.2s;
         }
-        
-        .check-items {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
+        .nav-arrow:hover {
+          background: #FDF6EE;
         }
-
-        .check-item {
+        .calendar-grid-header {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          text-align: center;
+          font-weight: 600;
+          font-family: var(--font-subtitle);
+          color: #A08088;
+          margin-bottom: 8px;
+          font-size: 0.85rem;
+        }
+        .calendar-grid-body {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 6px;
+        }
+        .grid-cell.empty {
+          aspect-ratio: 1;
+        }
+        .day-cell {
+          aspect-ratio: 1;
+          border-radius: 50%;
+          border: 2px solid transparent;
+          font-family: var(--font-body);
+          font-weight: 600;
+          font-size: 0.9rem;
+          cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 14px;
-          background: #FFFFFF;
-          border: 1px solid #E8D5A3;
-          border-radius: 10px;
-          padding: 13px 14px;
-          cursor: pointer;
+          justify-content: center;
           transition: all 0.2s ease;
+          background: none;
+          position: relative;
         }
-
-        .check-item:hover {
-          border-color: #C9A96E;
-          transform: translateY(-1px);
-          box-shadow: 0 2px 8px rgba(107, 39, 55, 0.05);
+        .day-cell.empty-tasks {
+          background: #F5F5F5;
+          color: #6B4A52;
         }
+        .day-cell.partial {
+          background: #FFF9E6;
+          color: #8C6B00;
+          border-color: #E8D5A3;
+        }
+        .day-cell.all-done {
+          background: #E8F5E9;
+          color: #2E7D32;
+        }
+        .day-cell.selected {
+          background: #6B2737 !important;
+          color: #FFFFFF !important;
+        }
+        .day-cell.today {
+          border: 2px dashed #C9A96E;
+        }
+        .day-cell.disabled {
+          background: #FAFAFA;
+          color: #D0D0D0;
+          cursor: not-allowed;
+        }
+        .day-cell:hover:not(.disabled):not(.selected) {
+          transform: scale(1.08);
+          background: #FDF6EE;
+        }
+        .day-cell:focus-visible {
+          outline: 3px solid #C9A96E;
+          outline-offset: 1px;
+        }
+        
+        .calendar-legend {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-top: 16px;
+          justify-content: center;
+          font-family: var(--font-body);
+          font-size: 0.78rem;
+          color: #A08088;
+        }
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .legend-color {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          display: inline-block;
+        }
+        .color-empty { background: #F5F5F5; }
+        .color-partial { background: #FFF9E6; border: 1px solid #E8D5A3; }
+        .color-done { background: #E8F5E9; }
+        .color-selected { background: #6B2737; }
+        .color-today { border: 1.5px dashed #C9A96E; }
 
+        .real-checkbox {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
         .check-box {
           width: 22px;
           height: 22px;
@@ -159,62 +342,39 @@ const DailyChecklist = () => {
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
+          background: #FFFFFF;
           transition: all 0.2s;
         }
-
-        .check-item.checked {
-          background: #FDF6EE;
-          border-color: #E8D5A3;
+        .real-checkbox:focus-visible + .check-box {
+          outline: 3px solid #6B2737;
+          outline-offset: 2px;
         }
-
         .check-item.checked .check-box {
           background: linear-gradient(135deg, #6B2737, #9B4A5A);
           border-color: #6B2737;
-          animation: checkPop 0.3s ease;
         }
-
-        .check-item.checked .check-box::after {
-          content: '✓';
-          color: #FFFFFF;
-          font-size: 12px;
+        .check-symbol {
+          color: white;
+          font-size: 13px;
           font-weight: bold;
         }
 
-        .check-label {
-          font-family: var(--font-body);
-          font-size: 14px;
-          color: #2C1A20;
-          line-height: 1.5;
-          transition: all 0.2s;
-        }
-
-        .check-item.checked .check-label {
-          color: #A08088;
-          text-decoration: line-through;
-        }
-        
-        .motivacional {
-          background: linear-gradient(135deg, #4A1A24, #6B2737);
-          border-radius: 14px;
-          padding: 18px 20px;
-          border-left: 3px solid #C9A96E;
+        .status-msg-box {
+          padding: 14px 20px;
+          border-radius: 12px;
           font-family: var(--font-subtitle);
-          font-size: 15px;
-          font-weight: 500;
-          font-style: italic;
-          color: #FFFFFF;
-          margin-top: 24px;
-          box-shadow: 0 4px 16px rgba(74, 26, 36, 0.25);
-          animation: fadeUp 0.4s ease;
-          text-align: center;
+          font-size: 0.95rem;
+          font-weight: 600;
         }
-
-        .scale-in {
-          animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+        .status-msg-box.partial {
+          background: #FDF6EE;
+          color: #6B2737;
+          border: 1px dashed #E8D5A3;
         }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.98); }
-          to { opacity: 1; transform: scale(1); }
+        .status-msg-box.done {
+          background: linear-gradient(135deg, #6B2737, #9B4A5A);
+          color: white;
+          box-shadow: 0 4px 12px rgba(107,39,55,0.15);
         }
       ` }} />
     </div>

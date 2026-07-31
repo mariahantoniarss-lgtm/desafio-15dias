@@ -1,46 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IDEIAS_CONTEUDO } from '../data/constants';
 
 const InspirationGrid = () => {
   const [selectedIdea, setSelectedIdea] = useState(null);
+  const triggerRef = useRef(null);
+  const closeButtonRef = useRef(null);
 
-  const openModal = (ideia) => {
+  const openModal = (ideia, event) => {
+    // Salvar o elemento que disparou a abertura do modal
+    triggerRef.current = event.currentTarget;
     setSelectedIdea(ideia);
-    setTimeout(() => {
-      const modalBox = document.querySelector('.modal-box');
-      if (modalBox) modalBox.scrollTop = 0;
-    }, 10);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setSelectedIdea(null);
+    document.body.style.overflow = '';
+    // Retornar o foco ao card de origem
+    if (triggerRef.current) {
+      triggerRef.current.focus();
+    }
+  };
+
+  // Escuta Esc para fechar o modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && selectedIdea) {
+        closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIdea]);
+
+  // Foco inicial no botão de fechar quando o modal abrir
+  useEffect(() => {
+    if (selectedIdea && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [selectedIdea]);
+
+  // Focus trap básico: manter o foco dentro do modal se tentar navegar com Tab
+  const handleTabTrap = (e) => {
+    if (!selectedIdea) return;
+    const modalEl = document.querySelector('.modal-box');
+    if (!modalEl) return;
+    
+    const focusableEls = modalEl.querySelectorAll('button, [tabindex="0"]');
+    const firstEl = focusableEls[0];
+    const lastEl = focusableEls[focusableEls.length - 1];
+
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          lastEl.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          firstEl.focus();
+          e.preventDefault();
+        }
+      }
+    }
   };
 
   return (
     <section className="animate-fade-up">
       <div className="section-eyebrow" style={{ color: '#C9A96E' }}>Inspirações diárias</div>
-      <h2 className="section-title">Nível 2 — Do Relacionamento à Venda</h2>
+      <h2 className="section-title">Roteiros e inspirações de produtos</h2>
       <p style={{ fontSize: '0.88rem', color: '#6B4A52', marginBottom: '20px', fontFamily: 'var(--font-body)' }}>
         Toque nos cards com borda inferior dourada para ver o roteiro de stories completo 👇
       </p>
 
       <div className="ideias-grid">
-        {IDEIAS_CONTEUDO.map((ideia, idx) => (
-          <div
-            key={idx}
-            className={`ideia-card ${ideia.hasModal ? 'has-modal' : ''}`}
-            onClick={() => ideia.hasModal && openModal(ideia)}
-          >
-            <div className="ideia-emoji">{ideia.emoji}</div>
-            <div className="ideia-titulo">{ideia.titulo}</div>
-            <div className="ideia-desc">{ideia.desc}</div>
-            {ideia.hasModal && <div className="ideia-tap">👆 Toque para ver o roteiro</div>}
-          </div>
-        ))}
+        {IDEIAS_CONTEUDO.map((ideia, idx) => {
+          const handleKeyDown = (e) => {
+            if ((e.key === ' ' || e.key === 'Enter') && ideia.hasModal) {
+              e.preventDefault();
+              openModal(ideia, e);
+            }
+          };
+
+          return (
+            <div
+              key={idx}
+              className={`ideia-card ${ideia.hasModal ? 'has-modal' : ''}`}
+              tabIndex={ideia.hasModal ? 0 : -1}
+              onClick={(e) => ideia.hasModal && openModal(ideia, e)}
+              onKeyDown={handleKeyDown}
+              role={ideia.hasModal ? "button" : undefined}
+              aria-haspopup={ideia.hasModal ? "dialog" : undefined}
+            >
+              <div className="ideia-emoji" aria-hidden="true">{ideia.emoji}</div>
+              <div className="ideia-titulo">{ideia.titulo}</div>
+              <div className="ideia-desc">{ideia.desc}</div>
+              {ideia.hasModal && <div className="ideia-tap">👆 Toque para ver o roteiro</div>}
+            </div>
+          );
+        })}
       </div>
 
       {selectedIdea && (
-        <div className="modal-overlay open" onClick={() => setSelectedIdea(null)}>
-          <div className="modal-box" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedIdea(null)}>✕</button>
-            <div className="modal-emoji">{selectedIdea.modalContent.emoji}</div>
-            <div className="modal-titulo">{selectedIdea.modalContent.titulo}</div>
+        <div className="modal-overlay open" onClick={closeModal}>
+          <div 
+            className="modal-box" 
+            onClick={e => e.stopPropagation()}
+            onKeyDown={handleTabTrap}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title-id"
+          >
+            <button 
+              ref={closeButtonRef}
+              className="modal-close" 
+              onClick={closeModal} 
+              aria-label="Fechar roteiro"
+            >
+              ✕
+            </button>
+            <div className="modal-emoji" aria-hidden="true">{selectedIdea.modalContent.emoji}</div>
+            <div id="modal-title-id" className="modal-titulo">{selectedIdea.modalContent.titulo}</div>
             <div className="modal-tag">{selectedIdea.modalContent.tag}</div>
             
             <div className="modal-body">
@@ -76,15 +156,19 @@ const InspirationGrid = () => {
           display: flex;
           flex-direction: column;
           gap: 6px;
+          outline: none;
         }
         .ideia-card.has-modal {
           cursor: pointer;
           border-bottom: 3px solid #C9A96E;
         }
-        .ideia-card.has-modal:hover {
+        .ideia-card.has-modal:hover, .ideia-card.has-modal:focus-visible {
           transform: translateY(-3px);
           box-shadow: 0 8px 28px rgba(107, 39, 55, 0.16);
           border-color: #C9A96E;
+        }
+        .ideia-card:focus-visible {
+          outline: 3px solid #6B2737;
         }
         .ideia-emoji { font-size: 1.6rem; }
         .ideia-titulo {
@@ -151,9 +235,11 @@ const InspirationGrid = () => {
           color: #6B2737;
           font-weight: 700;
           transition: all 0.2s;
+          cursor: pointer;
         }
-        .modal-close:hover {
+        .modal-close:hover, .modal-close:focus-visible {
           background: #E8D5A3;
+          outline: none;
         }
         .modal-emoji { font-size: 2.5rem; margin-bottom: 8px; }
         .modal-titulo {
@@ -215,8 +301,7 @@ const InspirationGrid = () => {
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        /* Responsividade para Modal e Grid */
+ 
         @media (max-width: 640px) {
           .ideias-grid {
             grid-template-columns: 1fr 1fr;
@@ -239,13 +324,13 @@ const InspirationGrid = () => {
             grid-template-columns: repeat(3, 1fr);
           }
         }
-
+ 
         @media (min-width: 861px) {
           .ideias-grid {
             grid-template-columns: repeat(4, 1fr);
           }
         }
-
+ 
         @keyframes slideUpMobile {
           from { transform: translateY(100%); }
           to { transform: translateY(0); }

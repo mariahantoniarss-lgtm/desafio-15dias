@@ -1,46 +1,60 @@
 import React, { useState, useEffect } from 'react';
 import { useChallenge } from '../context/ChallengeContext';
-import { START_DATE } from '../data/constants';
 
 const DailyNotes = () => {
-  const { activeDay, saveNotes, getNotes } = useChallenge();
+  const { activeDate, state, getMonthData } = useChallenge();
   const [consegui, setConsegui] = useState('');
   const [dificuldade, setDificuldade] = useState('');
   const [amanha, setAmanha] = useState('');
   const [isSaved, setIsSaved] = useState(false);
 
+  const monthKey = activeDate.substring(0, 7);
+
+  // Carregar anotações quando a data mudar
   useEffect(() => {
-    const notes = getNotes(activeDay);
-    setConsegui(notes.consegui || '');
-    setDificuldade(notes.dificuldade || '');
-    setAmanha(notes.amanha || '');
+    const monthData = getMonthData(monthKey);
+    const notesForDate = (monthData.tarefasPorData[activeDate] || {})._notes || {};
+    setConsegui(notesForDate.consegui || '');
+    setDificuldade(notesForDate.dificuldade || '');
+    setAmanha(notesForDate.amanha || '');
     setIsSaved(false);
-  }, [activeDay]);
+  }, [activeDate]);
 
   const handleSave = () => {
-    saveNotes(activeDay, { consegui, dificuldade, amanha });
+    // Salvar as anotações no localStorage diretamente para não depender de um método separado
+    const savedData = JSON.parse(localStorage.getItem('rotina_friends_v3') || '{"versao":"3.0","meses":{}}');
+    if (!savedData.meses[monthKey]) {
+      savedData.meses[monthKey] = { tarefasPorData: {}, metasPorSemana: {}, fechamento: {} };
+    }
+    if (!savedData.meses[monthKey].tarefasPorData[activeDate]) {
+      savedData.meses[monthKey].tarefasPorData[activeDate] = {};
+    }
+    savedData.meses[monthKey].tarefasPorData[activeDate]._notes = { consegui, dificuldade, amanha };
+    localStorage.setItem('rotina_friends_v3', JSON.stringify(savedData));
+
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
 
-  const getDayLabel = (dayIdx) => {
-    const date = new Date(START_DATE);
-    date.setDate(date.getDate() + dayIdx);
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-  };
+  // Formatar data legível
+  const parts = activeDate.split('-');
+  const nomesMeses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+    'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  const dayLabel = `${parseInt(parts[2], 10)} de ${nomesMeses[parseInt(parts[1], 10) - 1]} de ${parts[0]}`;
 
   return (
     <div className="daily-notes-card animate-fade-up">
       <div style={{ marginBottom: '20px' }}>
         <div className="section-eyebrow" style={{ color: '#6B2737' }}>Reflexão do dia</div>
         <h3 className="notes-subtitle">Espaço para anotações</h3>
-        <div className="day-label">Dia {activeDay + 1} — {getDayLabel(activeDay)}</div>
+        <div className="day-label">{dayLabel}</div>
       </div>
 
       <div className="anot-grid">
         <div className="anot-item">
-          <label className="anot-label">✅ Hoje eu consegui:</label>
+          <label className="anot-label" htmlFor="nota-consegui">✅ Hoje eu consegui:</label>
           <textarea
+            id="nota-consegui"
             className="anot-input"
             value={consegui}
             onChange={(e) => setConsegui(e.target.value)}
@@ -48,8 +62,9 @@ const DailyNotes = () => {
           />
         </div>
         <div className="anot-item">
-          <label className="anot-label">🧩 Minha maior dificuldade foi:</label>
+          <label className="anot-label" htmlFor="nota-dificuldade">🧩 Minha maior dificuldade foi:</label>
           <textarea
+            id="nota-dificuldade"
             className="anot-input"
             value={dificuldade}
             onChange={(e) => setDificuldade(e.target.value)}
@@ -57,8 +72,9 @@ const DailyNotes = () => {
           />
         </div>
         <div className="anot-item">
-          <label className="anot-label">🚀 Amanhã vou melhorar em:</label>
+          <label className="anot-label" htmlFor="nota-amanha">🚀 Amanhã vou melhorar em:</label>
           <textarea
+            id="nota-amanha"
             className="anot-input"
             value={amanha}
             onChange={(e) => setAmanha(e.target.value)}
@@ -69,7 +85,7 @@ const DailyNotes = () => {
 
       <div className="anot-footer">
         <button className="btn-salvar" onClick={handleSave}>Salvar anotações 💜</button>
-        {isSaved && <div className="anot-salvo visible">✓ Anotações salvas com sucesso!</div>}
+        {isSaved && <div className="anot-salvo visible" role="status">✓ Anotações salvas com sucesso!</div>}
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
@@ -141,15 +157,21 @@ const DailyNotes = () => {
           background: #6B2737;
           color: #FFFFFF;
           border-radius: 40px;
+          border: none;
           font-family: var(--font-subtitle);
           font-weight: 600;
           padding: 11px 28px;
           font-size: 0.88rem;
           transition: all 0.2s;
+          cursor: pointer;
         }
         .btn-salvar:hover {
           background: #4A1A24;
           transform: translateY(-1px);
+        }
+        .btn-salvar:focus-visible {
+          outline: 3px solid #C9A96E;
+          outline-offset: 2px;
         }
         .anot-salvo {
           font-family: var(--font-subtitle);

@@ -12,7 +12,7 @@ const CalendarFriends = () => {
       <div className="calendar-header">
         <h2 className="section-title">Calendário Friends</h2>
         <p className="section-subtitle">
-          Acompanhe todos os eventos, reuniões e missões!
+          Acompanhe campanhas, reuniões, promoções, prazos e compromissos do Time Friends.
         </p>
       </div>
 

@@ -1,40 +1,40 @@
-import React, { useState } from 'react';
-import { useChallenge } from '../context/ChallengeContext';
-import { TOTAL_DIAS, ITENS_CHECKLIST, METAS_QUINZENAIS } from '../data/constants';
+import React, { useState, useEffect, useRef } from 'react';
+import { useChallenge, getSPDateInfo } from '../context/ChallengeContext';
+import { getDadosMesAtual } from '../data/frases';
+import { ITENS_CHECKLIST } from '../data/constants';
 
 const FinalSection = () => {
-  const { state, resetChallenge } = useChallenge();
+  const { getMonthData } = useChallenge();
   const [showShareModal, setShowShareModal] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const triggerBtnRef = useRef(null);
+  const closeBtnRef = useRef(null);
 
-  const calculateProgress = () => {
-    // Diários: 90 checks
-    // Quinzenais: 36 checks
-    let totalChecks = 126;
-    let completedChecks = 0;
-    let completedDays = 0;
+  const todayInfo = getSPDateInfo();
+  const todayKey = todayInfo.dateKey;
+  const todayMonthKey = todayKey.substring(0, 7);
+  
+  const { totalDias } = getDadosMesAtual();
+  const monthData = getMonthData(todayMonthKey);
 
-    for (let i = 0; i < TOTAL_DIAS; i++) {
-      const dayData = state[`dia_${i}`] || {};
-      const completedInDay = Object.values(dayData).filter(Boolean).length;
-      completedChecks += completedInDay;
-      if (completedInDay === ITENS_CHECKLIST.length) completedDays++;
+  // Calcular constância do mês atual
+  let diasCompletos = 0;
+  const yearStr = todayKey.substring(0, 4);
+  const monthStr = todayKey.substring(5, 7);
+
+  for (let d = 1; d <= totalDias; d++) {
+    const dateStr = `${yearStr}-${monthStr}-${String(d).padStart(2, '0')}`;
+    const dayData = monthData.tarefasPorData[dateStr] || {};
+    if (ITENS_CHECKLIST.every(item => dayData[item.id])) {
+      diasCompletos++;
     }
-
-    METAS_QUINZENAIS.forEach(bloco => {
-      const goalData = state[`weekly_${bloco.id}`] || {};
-      completedChecks += Object.values(goalData).filter(Boolean).length;
-    });
-
-    const percentage = Math.round((completedChecks / totalChecks) * 100);
-    return { percentage, completedDays };
-  };
-
-  const { percentage, completedDays } = calculateProgress();
+  }
+  
+  const percentage = Math.round((diasCompletos / totalDias) * 100);
 
   const handleShare = () => {
-    const emoji = percentage >= 80 ? '🔥' : percentage >= 50 ? '💪' : '🌱';
-    const text = `${emoji} Desafio Friends — Nível 2\n\nJá completei ${completedDays} de ${TOTAL_DIAS} dias!\n${percentage}% do desafio concluído 🍷\n\nMenos perfeição. Mais execução.\n\n#TimeFriends #YberaFriends #DesafioFriends #AçãoGeraResultado`;
+    const emoji = percentage >= 80 ? '🔥' : percentage >= 50 ? '💪' : '🍷';
+    const text = `${emoji} Rotina Friends\n\nMinha constância: ${diasCompletos} de ${totalDias} dias completos neste mês!\n${percentage}% do mês concluído 🍷\n\nMenos perfeição. Mais execução.\n\n#TimeFriends #YberaFriends #RotinaFriends #Constancia`;
     
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
@@ -43,6 +43,62 @@ const FinalSection = () => {
       });
     }
   };
+
+  const openShareModal = (e) => {
+    triggerBtnRef.current = e.currentTarget;
+    setShowShareModal(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeShareModal = () => {
+    setShowShareModal(false);
+    document.body.style.overflow = '';
+    if (triggerBtnRef.current) {
+      triggerBtnRef.current.focus();
+    }
+  };
+
+  // Close with Esc
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && showShareModal) {
+        closeShareModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showShareModal]);
+
+  // Focus trap for share modal
+  const handleTabTrap = (e) => {
+    if (!showShareModal) return;
+    const modalEl = document.querySelector('.share-box');
+    if (!modalEl) return;
+
+    const focusableEls = modalEl.querySelectorAll('button, [tabindex="0"]');
+    const firstEl = focusableEls[0];
+    const lastEl = focusableEls[focusableEls.length - 1];
+
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          lastEl.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          firstEl.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (showShareModal && closeBtnRef.current) {
+      closeBtnRef.current.focus();
+    }
+  }, [showShareModal]);
 
   return (
     <section>
@@ -60,30 +116,39 @@ const FinalSection = () => {
         </p>
         
         <div className="btn-row">
-          <button className="btn-primary" onClick={() => setShowShareModal(true)}>📲 Compartilhar meu progresso</button>
-          <button className="btn-ghost" onClick={() => {
-            if (window.confirm('Tem certeza que quer reiniciar o desafio? Todo progresso será apagado.')) {
-              resetChallenge();
-            }
-          }}>↺ Reiniciar desafio</button>
+          <button className="btn-primary" onClick={openShareModal}>📲 Compartilhar meu progresso</button>
         </div>
       </div>
 
       {showShareModal && (
-        <div className="modal-overlay open" onClick={() => setShowShareModal(false)}>
-          <div className="modal-box share-box" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowShareModal(false)}>✕</button>
-            <h3 className="share-modal-title">📲 Compartilhar progresso</h3>
+        <div className="modal-overlay open" onClick={closeShareModal}>
+          <div 
+            className="modal-box share-box" 
+            onClick={e => e.stopPropagation()}
+            onKeyDown={handleTabTrap}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="share-title-id"
+          >
+            <button 
+              ref={closeBtnRef}
+              className="modal-close" 
+              onClick={closeShareModal} 
+              aria-label="Fechar compartilhamento"
+            >
+              ✕
+            </button>
+            <h3 id="share-title-id" className="share-modal-title">📲 Compartilhar progresso</h3>
             <p className="share-modal-subtitle">
               Copie o texto abaixo e cole nos seus Stories marcando o Time Friends!
             </p>
             
             <div className="share-text-box">
-              {percentage >= 80 ? '🔥' : percentage >= 50 ? '💪' : '🌱'} Desafio Friends — Nível 2<br /><br />
-              Já completei {completedDays} de {TOTAL_DIAS} dias!<br />
-              {percentage}% do desafio concluído 🍷<br /><br />
+              {percentage >= 80 ? '🔥' : percentage >= 50 ? '💪' : '🍷'} Rotina Friends<br /><br />
+              Minha constância: {diasCompletos} de {totalDias} dias completos neste mês!<br />
+              {percentage}% do mês concluído 🍷<br /><br />
               Menos perfeição. Mais execução.<br /><br />
-              #TimeFriends #YberaFriends #DesafioFriends #AçãoGeraResultado
+              #TimeFriends #YberaFriends #RotinaFriends #Constancia
             </div>
 
             <div className="btn-row" style={{ marginTop: '20px' }}>
@@ -114,6 +179,7 @@ const FinalSection = () => {
           right: -20px;
           opacity: 0.05;
           pointer-events: none;
+          aria-hidden: true;
         }
         .final-titulo {
           font-family: var(--font-subtitle);
@@ -157,25 +223,17 @@ const FinalSection = () => {
           padding: 13px 28px;
           border-radius: 40px;
           transition: all 0.2s;
+          border: none;
           box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+          cursor: pointer;
         }
         .btn-primary:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
-        .btn-ghost {
-          background: rgba(255, 255, 255, 0.12);
-          color: #FFFFFF;
-          border: 1px solid rgba(255, 255, 255, 0.25);
-          font-family: var(--font-subtitle);
-          font-size: 0.88rem;
-          font-weight: 600;
-          padding: 13px 28px;
-          border-radius: 40px;
-          transition: all 0.2s;
-        }
-        .btn-ghost:hover {
-          background: rgba(255, 255, 255, 0.2);
+        .btn-primary:focus-visible {
+          outline: 3px solid #C9A96E;
+          outline-offset: 2px;
         }
 
         .share-modal-title {
@@ -209,14 +267,20 @@ const FinalSection = () => {
           background: #6B2737;
           color: #FFFFFF;
           border-radius: 40px;
+          border: none;
           font-family: var(--font-subtitle);
           font-weight: 600;
           padding: 12px 28px;
           font-size: 0.9rem;
           transition: all 0.2s;
+          cursor: pointer;
         }
         .btn-salvar-share:hover {
           background: #4A1A24;
+        }
+        .btn-salvar-share:focus-visible {
+          outline: 3px solid #C9A96E;
+          outline-offset: 2px;
         }
 
         @media (max-width: 640px) {
@@ -229,7 +293,7 @@ const FinalSection = () => {
           .final-texto {
             font-size: 14px;
           }
-          .btn-primary, .btn-ghost {
+          .btn-primary {
             width: 100%;
             padding: 12px 20px;
           }

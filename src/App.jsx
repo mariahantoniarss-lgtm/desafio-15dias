@@ -3,9 +3,7 @@ import './App.css';
 import { ChallengeProvider } from './context/ChallengeContext';
 import Hero from './components/Hero';
 import AboutSection from './components/AboutSection';
-import MissionsSection from './components/MissionsSection';
 import DailyChecklist from './components/DailyChecklist';
-import ProgressCard from './components/ProgressCard';
 import DailyNotes from './components/DailyNotes';
 import InspirationGrid from './components/InspirationGrid';
 import FinalSection from './components/FinalSection';
@@ -22,16 +20,6 @@ function App() {
         <Hero onNavigate={setActiveTab} />
         
         <main className="page">
-          <AboutSection />
-          
-          <MissionsSection />
-
-          <section id="roadmap" style={{ marginTop: '48px', marginBottom: '16px' }}>
-            <div className="section-eyebrow">Seu Esforço Real</div>
-            <h2 className="section-title">Barra de progresso</h2>
-            <ProgressCard />
-          </section>
-
           <TabsNav activeTab={activeTab} onTabChange={setActiveTab} />
 
           {activeTab === 'diario' && (
@@ -51,6 +39,12 @@ function App() {
               <section id="weekly-goals">
                 <WeeklyGoals />
               </section>
+            </div>
+          )}
+
+          {activeTab === 'orientacoes' && (
+            <div className="tab-content animate-fade-in">
+              <AboutSection />
             </div>
           )}
 

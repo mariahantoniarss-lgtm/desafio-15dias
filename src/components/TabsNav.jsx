@@ -2,21 +2,24 @@ import React from 'react';
 
 const TabsNav = ({ activeTab, onTabChange }) => {
   const tabs = [
-    { id: 'diario', label: 'DIÁRIO', emoji: '📝' },
-    { id: 'quinzenal', label: 'QUINZENAL', emoji: '🎯' },
-    { id: 'produtos', label: 'PRODUTOS', emoji: '🧴' },
-    { id: 'calendario', label: 'AGENDA', emoji: '🗓️' },
+    { id: 'diario', label: 'Tarefas', emoji: '📝' },
+    { id: 'quinzenal', label: 'Semanas', emoji: '🎯' },
+    { id: 'orientacoes', label: 'Orientações', emoji: '💡' },
+    { id: 'produtos', label: 'Produtos', emoji: '🧴' },
+    { id: 'calendario', label: 'Agenda', emoji: '🗓️' },
   ];
 
   return (
-    <nav className="tabs-nav">
+    <nav className="tabs-nav" aria-label="Navegação principal">
       {tabs.map((tab) => (
         <button
           key={tab.id}
+          role="tab"
+          aria-selected={activeTab === tab.id}
           className={`tab-item ${activeTab === tab.id ? 'active' : ''}`}
           onClick={() => onTabChange(tab.id)}
         >
-          <span className="tab-emoji">{tab.emoji}</span>
+          <span className="tab-emoji" aria-hidden="true">{tab.emoji}</span>
           <span className="tab-label">{tab.label}</span>
         </button>
       ))}
@@ -25,7 +28,7 @@ const TabsNav = ({ activeTab, onTabChange }) => {
         .tabs-nav {
           display: flex;
           position: sticky;
-          top: 38px; /* espaço para o fixed cache warning no topo */
+          top: 38px;
           z-index: 100;
           background: #FDF6EE;
           border-bottom: 2px solid #E8D5A3;
@@ -36,7 +39,7 @@ const TabsNav = ({ activeTab, onTabChange }) => {
 
         .tab-item {
           flex: 1;
-          max-width: 200px;
+          max-width: 180px;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -47,9 +50,9 @@ const TabsNav = ({ activeTab, onTabChange }) => {
           font-family: var(--font-subtitle);
           font-size: 13px;
           font-weight: 500;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.05em;
           text-transform: uppercase;
-          padding: 14px 20px;
+          padding: 14px 10px;
           border: none;
           border-bottom: 3px solid transparent;
           cursor: pointer;
@@ -74,19 +77,19 @@ const TabsNav = ({ activeTab, onTabChange }) => {
           font-weight: inherit;
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .tabs-nav {
             margin: 0 -16px 24px;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(5, 1fr);
             width: 100vw;
             left: 0;
             top: 36px;
           }
           .tab-item {
             max-width: 100%;
-            padding: 12px 6px;
-            font-size: 11px;
+            padding: 10px 4px;
+            font-size: 10px;
             gap: 4px;
             flex-direction: column;
           }
