@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useChallenge } from '../context/ChallengeContext';
-import { getFraseDoDia, getDadosMesAtual } from '../data/frases';
+import { getDadosMesAtual } from '../data/frases';
 import { ITENS_CHECKLIST } from '../data/constants';
 
 const Hero = ({ onNavigate }) => {
   const [warningAberto, setWarningAberto] = useState(true);
   const { state, setActiveDay } = useChallenge();
   
-  const { mesNome, ano, totalDias, diaAtual, textoMesAno } = getDadosMesAtual();
-  const fraseDoDia = getFraseDoDia();
+  const { totalDias, diaAtual, textoMesAno } = getDadosMesAtual();
   
   // Calcular constância
   let diasCompletos = 0;
@@ -21,32 +20,33 @@ const Hero = ({ onNavigate }) => {
   
   let progressoPorcento = Math.round((diasCompletos / totalDias) * 100);
   if (progressoPorcento > 100) progressoPorcento = 100;
-  
-  // Situação de hoje
+
   const hojeIndex = diaAtual - 1;
-  const hojeData = state[`dia_${hojeIndex}`] || {};
-  const tarefasHojeConcluidas = ITENS_CHECKLIST.filter(item => hojeData[item.id]).length;
-  const isHojeCompleto = tarefasHojeConcluidas === 6;
-  
-  let mensagemHoje = "";
-  if (tarefasHojeConcluidas === 0) mensagemHoje = "Seu dia ainda não foi iniciado.";
-  else if (tarefasHojeConcluidas < 6) mensagemHoje = "Você já começou. Continue no seu ritmo.";
-  else mensagemHoje = "Dia concluído. Você cumpriu seus compromissos de hoje.";
 
   const handleBotaoPrincipal = () => {
-    if (isHojeCompleto) {
-      if(onNavigate) onNavigate('quinzenal');
-    } else {
-      if(onNavigate) onNavigate('diario');
-      if(setActiveDay) setActiveDay(hojeIndex);
-    }
+    if(onNavigate) onNavigate('diario');
+    if(setActiveDay) setActiveDay(hojeIndex);
+    setTimeout(() => {
+      const el = document.getElementById('checklist');
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } else {
+        window.scrollBy({ top: 500, behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const handleLinkSecundario = () => {
     if(onNavigate) onNavigate('orientacoes');
     setTimeout(() => {
       const el = document.getElementById('entenda-o-metodo');
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 100;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } else {
+        window.scrollBy({ top: 500, behavior: 'smooth' });
+      }
     }, 100);
   };
 
@@ -56,7 +56,7 @@ const Hero = ({ onNavigate }) => {
         {warningAberto ? (
           <>
             <span className="warning-icon" aria-hidden="true">⚠️</span>
-            <span className="warning-text">Seu progresso fica salvo neste navegador. Se você limpar os dados do site ou trocar de aparelho ou navegador, ele não será transferido.</span>
+            <span className="warning-text"><strong>Seu progresso fica salvo neste navegador.</strong> Para não perder suas marcações, não limpe os dados deste site. Se você trocar de aparelho ou navegador, o progresso não será transferido.</span>
             <button className="warning-close-btn" onClick={() => setWarningAberto(false)} aria-label="Recolher aviso">✕</button>
           </>
         ) : (
@@ -72,17 +72,21 @@ const Hero = ({ onNavigate }) => {
           
           <h1 className="hero-title">ROTINA FRIENDS</h1>
           
-          <p className="hero-main-phrase">
-            Constância para ser vista. Relacionamento para ser lembrada. Confiança para vender.
-          </p>
+          <h2 className="hero-main-phrase">
+            Sua constância transforma conteúdo em relacionamento — e relacionamento abre caminho para vendas.
+          </h2>
 
           <p className="hero-support-text">
-            Acompanhe suas tarefas diárias, cumpra as metas da semana e desenvolva uma rotina de conteúdo que ajude você a crescer, criar relacionamento e gerar oportunidades de venda.
+            Este é o seu espaço para acompanhar as tarefas diárias, cumprir as metas da semana e desenvolver uma rotina de conteúdo que ajude você a ser vista, lembrada e procurada.
+          </p>
+          <p className="hero-support-text">
+            Você não precisa publicar tudo de uma vez, criar um conteúdo perfeito ou esperar a motivação aparecer. O crescimento acontece quando ações simples são repetidas com intenção.
           </p>
 
-          <div className="hero-motivation-card">
-            <h3 className="card-title">PARA HOJE 💜</h3>
-            <p className="card-quote">“{fraseDoDia}”</p>
+          <div className="hero-quote-box">
+            <p className="hero-quote">
+              Vender não é empurrar um produto. É entender uma necessidade, orientar com honestidade e indicar uma solução em que você acredita.
+            </p>
           </div>
 
           <div className="hero-month">{textoMesAno}</div>
@@ -94,18 +98,11 @@ const Hero = ({ onNavigate }) => {
             <div className="progress-bar-container" role="progressbar" aria-valuenow={progressoPorcento} aria-valuemin="0" aria-valuemax="100">
               <div className="progress-bar-fill" style={{ width: `${progressoPorcento}%` }}></div>
             </div>
-            <div className="stats-percentage">{progressoPorcento}% do mês concluído</div>
-          </div>
-
-          <div className="hero-today">
-            <h3 className="today-title">HOJE</h3>
-            <div className="today-info">{tarefasHojeConcluidas} de 6 tarefas concluídas</div>
-            <div className="today-message">{mensagemHoje}</div>
           </div>
 
           <div className="hero-actions">
             <button className="btn-main" onClick={handleBotaoPrincipal}>
-              {isHojeCompleto ? 'Ver minha semana' : 'Ver tarefas de hoje'}
+              Ver tarefas de hoje
             </button>
             <button className="btn-link" onClick={handleLinkSecundario}>
               Entender o Método PONTE
@@ -208,36 +205,24 @@ const Hero = ({ onNavigate }) => {
             color: rgba(255, 255, 255, 0.85);
             font-size: 0.95rem;
             line-height: 1.6;
-            margin-bottom: 32px;
+            margin-bottom: 16px;
             max-width: 580px;
           }
-          
-          .hero-motivation-card {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(232, 213, 163, 0.3);
-            border-radius: 16px;
+
+          .hero-quote-box {
+            max-width: 700px;
+            margin: 16px auto 32px;
             padding: 24px 32px;
-            margin-bottom: 40px;
-            width: 100%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(8px);
-            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 3px solid var(--dourado);
+            border-radius: 0 16px 16px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
           }
-          
-          .card-title {
-            font-family: var(--font-subtitle);
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            color: var(--dourado-claro);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-          }
-          
-          .card-quote {
-            font-family: var(--font-title);
+
+          .hero-quote {
             font-size: 1.15rem;
             font-style: italic;
-            color: #FFFFFF;
+            color: var(--branco);
             line-height: 1.5;
             font-weight: 400;
           }
@@ -256,11 +241,11 @@ const Hero = ({ onNavigate }) => {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 16px;
             padding: 20px 24px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
             border: 1px solid rgba(255, 255, 255, 0.05);
           }
           
-          .stats-title, .today-title {
+          .stats-title {
             font-family: var(--font-subtitle);
             font-size: 0.75rem;
             letter-spacing: 0.1em;
@@ -271,7 +256,7 @@ const Hero = ({ onNavigate }) => {
           
           .stats-info {
             font-family: var(--font-body);
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #FFFFFF;
             margin-bottom: 12px;
@@ -283,7 +268,7 @@ const Hero = ({ onNavigate }) => {
             background: rgba(255,255,255,0.1);
             border-radius: 4px;
             overflow: hidden;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
           }
           
           .progress-bar-fill {
@@ -291,33 +276,6 @@ const Hero = ({ onNavigate }) => {
             background: var(--dourado-claro);
             border-radius: 4px;
             transition: width 0.8s ease;
-          }
-          
-          .stats-percentage {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.7);
-          }
-          
-          .hero-today {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 16px;
-            padding: 20px 24px;
-            margin-bottom: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-          }
-          
-          .today-info {
-            font-family: var(--font-body);
-            font-size: 1rem;
-            font-weight: 600;
-            color: #FFFFFF;
-            margin-bottom: 6px;
-          }
-          
-          .today-message {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.8);
           }
           
           .hero-actions {
@@ -349,11 +307,6 @@ const Hero = ({ onNavigate }) => {
             background: #D9B97E;
           }
           
-          .btn-main:focus-visible {
-            outline: 3px solid #FFF;
-            outline-offset: 2px;
-          }
-          
           .btn-link {
             background: none;
             border: none;
@@ -374,13 +327,12 @@ const Hero = ({ onNavigate }) => {
             .hero { padding: 90px 16px 40px; }
             .hero-title { font-size: 40px; margin-bottom: 16px; }
             .hero-main-phrase { font-size: 1.1rem; }
-            .card-quote { font-size: 1.05rem; }
-            .hero-motivation-card { padding: 20px; }
+            .hero-quote { font-size: 1.05rem; }
             .btn-main { padding: 14px 24px; font-size: 0.95rem; }
           }
           
           @media (prefers-reduced-motion: reduce) {
-            .progress-bar-fill, .btn-main, .hero-motivation-card, .cache-warning-compact {
+            .progress-bar-fill, .btn-main, .cache-warning-compact {
               transition: none !important;
               animation: none !important;
             }
