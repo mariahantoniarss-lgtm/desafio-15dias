@@ -19,7 +19,7 @@ function App() {
   return (
     <ChallengeProvider>
       <div className="app-container">
-        <Hero />
+        <Hero onNavigate={setActiveTab} />
         
         <main className="page">
           <AboutSection />

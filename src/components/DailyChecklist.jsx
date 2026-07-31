@@ -1,9 +1,11 @@
 import React from 'react';
 import { useChallenge } from '../context/ChallengeContext';
-import { TOTAL_DIAS, ITENS_CHECKLIST, FRASES_MOTIVACIONAIS, START_DATE } from '../data/constants';
+import { ITENS_CHECKLIST, FRASES_MOTIVACIONAIS, START_DATE } from '../data/constants';
+import { getDadosMesAtual, getFrasePorDia } from '../data/frases';
 
 const DailyChecklist = () => {
   const { state, activeDay, setActiveDay, toggleCheck } = useChallenge();
+  const { totalDias } = getDadosMesAtual();
 
   const isDayDone = (dayIdx) => {
     const dayData = state[`dia_${dayIdx}`] || {};
@@ -11,8 +13,11 @@ const DailyChecklist = () => {
   };
 
   const getDayLabel = (dayIdx) => {
-    const date = new Date(START_DATE);
-    date.setDate(date.getDate() + dayIdx);
+    // Pegar a data inicial do mês atual
+    const { ano } = getDadosMesAtual();
+    const dateStr = new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" });
+    const hoje = new Date(dateStr);
+    const date = new Date(ano, hoje.getMonth(), dayIdx + 1);
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
   };
 
@@ -22,7 +27,7 @@ const DailyChecklist = () => {
   return (
     <div className="checklist-container animate-fade-up">
       <div className="dias-tabs">
-        {Array.from({ length: TOTAL_DIAS }).map((_, i) => (
+        {Array.from({ length: totalDias }).map((_, i) => (
           <button
             key={i}
             className={`dia-tab ${activeDay === i ? 'active' : ''} ${isDayDone(i) ? 'done' : ''}`}
@@ -55,7 +60,7 @@ const DailyChecklist = () => {
 
         {showMotivacional && (
           <div className="motivacional">
-            {FRASES_MOTIVACIONAIS[activeDay % FRASES_MOTIVACIONAIS.length]}
+            {getFrasePorDia(activeDay + 1)}
           </div>
         )}
       </div>

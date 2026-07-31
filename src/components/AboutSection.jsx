@@ -2,7 +2,7 @@ import React from 'react';
 
 const AboutSection = () => {
   return (
-    <section className="animate-fade-up" style={{ marginTop: '48px' }}>
+    <section id="entenda-o-metodo" className="animate-fade-up" style={{ marginTop: '48px' }}>
       <div className="section-eyebrow">A origem do desafio</div>
       <h2 className="section-title">Por que esse desafio existe?</h2>
       <div className="card" style={{ background: '#FFFFFF', border: '1px solid #E8D5A3' }}>
