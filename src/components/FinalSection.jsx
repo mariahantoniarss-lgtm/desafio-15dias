@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import DialogPortal from './DialogPortal';
 import { useChallenge, getSPDateInfo } from '../context/ChallengeContext';
 import { getDadosMesAtual } from '../data/frases';
 import { ITENS_CHECKLIST } from '../data/constants';
@@ -47,12 +48,12 @@ const FinalSection = () => {
   const openShareModal = (e) => {
     triggerBtnRef.current = e.currentTarget;
     setShowShareModal(true);
-    document.body.style.overflow = 'hidden';
+    // Body scroll lock handled by DialogPortal
   };
 
   const closeShareModal = () => {
     setShowShareModal(false);
-    document.body.style.overflow = '';
+    // Body scroll lock handled by DialogPortal
     if (triggerBtnRef.current) {
       triggerBtnRef.current.focus();
     }
@@ -121,43 +122,34 @@ const FinalSection = () => {
       </div>
 
       {showShareModal && (
-        <div className="modal-overlay open" onClick={closeShareModal}>
-          <div 
-            className="modal-box share-box" 
-            onClick={e => e.stopPropagation()}
-            onKeyDown={handleTabTrap}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="share-title-id"
+        <DialogPortal isOpen={true} onClose={closeShareModal} titleId="share-title-id">
+          <button 
+            ref={closeBtnRef}
+            className="modal-close" 
+            onClick={closeShareModal} 
+            aria-label="Fechar compartilhamento"
           >
-            <button 
-              ref={closeBtnRef}
-              className="modal-close" 
-              onClick={closeShareModal} 
-              aria-label="Fechar compartilhamento"
-            >
-              ✕
-            </button>
-            <h3 id="share-title-id" className="share-modal-title">📲 Compartilhar progresso</h3>
-            <p className="share-modal-subtitle">
-              Copie o texto abaixo e cole nos seus Stories marcando o Time Friends!
-            </p>
-            
-            <div className="share-text-box">
-              {percentage >= 80 ? '🔥' : percentage >= 50 ? '💪' : '🍷'} Rotina Friends<br /><br />
-              Minha constância: {diasCompletos} de {totalDias} dias completos neste mês!<br />
-              {percentage}% do mês concluído 🍷<br /><br />
-              Menos perfeição. Mais execução.<br /><br />
-              #TimeFriends #YberaFriends #RotinaFriends #Constancia
-            </div>
-
-            <div className="btn-row" style={{ marginTop: '20px' }}>
-              <button className="btn-salvar-share" style={{ width: '100%' }} onClick={handleShare}>
-                {copySuccess ? 'Copiado! 🍷' : 'Copiar texto'}
-              </button>
-            </div>
+            ✕
+          </button>
+          <h3 id="share-title-id" className="share-modal-title">📲 Compartilhar progresso</h3>
+          <p className="share-modal-subtitle">
+            Copie o texto abaixo e cole nos seus Stories marcando o Time Friends!
+          </p>
+          
+          <div className="share-text-box">
+            {percentage >= 80 ? '🔥' : percentage >= 50 ? '💪' : '🍷'} Rotina Friends<br /><br />
+            Minha constância: {diasCompletos} de {totalDias} dias completos neste mês!<br />
+            {percentage}% do mês concluído 🍷<br /><br />
+            Menos perfeição. Mais execução.<br /><br />
+            #TimeFriends #YberaFriends #RotinaFriends #Constancia
           </div>
-        </div>
+
+          <div className="btn-row" style={{ marginTop: '20px' }}>
+            <button className="btn-salvar-share" style={{ width: '100%' }} onClick={handleShare}>
+              {copySuccess ? 'Copiado! 🍷' : 'Copiar texto'}
+            </button>
+          </div>
+        </DialogPortal>
       )}
 
       <style dangerouslySetInnerHTML={{ __html: `

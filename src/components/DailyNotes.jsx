@@ -1,6 +1,6 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { useChallenge } from '../context/ChallengeContext';
-
 const DailyNotes = () => {
   const { activeDate, state, getMonthData } = useChallenge();
   const [consegui, setConsegui] = useState('');

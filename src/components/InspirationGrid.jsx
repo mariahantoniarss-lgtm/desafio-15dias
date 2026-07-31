@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IDEIAS_CONTEUDO } from '../data/constants';
+import DialogPortal from './DialogPortal';
 
 const InspirationGrid = () => {
   const [selectedIdea, setSelectedIdea] = useState(null);
@@ -10,12 +11,12 @@ const InspirationGrid = () => {
     // Salvar o elemento que disparou a abertura do modal
     triggerRef.current = event.currentTarget;
     setSelectedIdea(ideia);
-    document.body.style.overflow = 'hidden';
+    // Body scroll lock is handled by DialogPortal
   };
 
   const closeModal = () => {
     setSelectedIdea(null);
-    document.body.style.overflow = '';
+    // Body scroll lock is handled by DialogPortal
     // Retornar o foco ao card de origem
     if (triggerRef.current) {
       triggerRef.current.focus();
@@ -102,15 +103,7 @@ const InspirationGrid = () => {
       </div>
 
       {selectedIdea && (
-        <div className="modal-overlay open" onClick={closeModal}>
-          <div 
-            className="modal-box" 
-            onClick={e => e.stopPropagation()}
-            onKeyDown={handleTabTrap}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-title-id"
-          >
+          <DialogPortal isOpen={true} onClose={closeModal} titleId="modal-title-id">
             <button 
               ref={closeButtonRef}
               className="modal-close" 
@@ -122,7 +115,6 @@ const InspirationGrid = () => {
             <div className="modal-emoji" aria-hidden="true">{selectedIdea.modalContent.emoji}</div>
             <div id="modal-title-id" className="modal-titulo">{selectedIdea.modalContent.titulo}</div>
             <div className="modal-tag">{selectedIdea.modalContent.tag}</div>
-            
             <div className="modal-body">
               {selectedIdea.modalContent.body.map((item, i) => {
                 if (item.type === 'text') return <p key={i} dangerouslySetInnerHTML={{ __html: item.content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />;
@@ -136,9 +128,8 @@ const InspirationGrid = () => {
                 return null;
               })}
             </div>
-          </div>
-        </div>
-      )}
+          </DialogPortal>
+        )}
 
       <style dangerouslySetInnerHTML={{ __html: `
         .ideias-grid {

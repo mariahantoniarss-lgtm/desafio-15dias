@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import DialogPortal from './DialogPortal';
 import { format, parseISO, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const AgendaView = ({ events, loading }) => {
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const openEventModal = (event) => { setSelectedEvent(event); };
+  const closeEventModal = () => { setSelectedEvent(null); };
   if (loading) {
     return <div className="loading-state">Carregando agenda...</div>;
   }
@@ -31,7 +35,7 @@ const AgendaView = ({ events, loading }) => {
           </div>
           <div className="day-events">
             {grouped[day].map(event => (
-              <div key={event.id} className={`event-card category-${event.category}`}>
+              <div key={event.id} className={`event-card category-${event.category}`} role="button" tabIndex={0} onClick={() => openEventModal(event)} onKeyPress={(e) => { if (e.key === 'Enter') openEventModal(event); }} style={{ cursor: 'pointer' }}>
                 <div className="event-time">
                   {format(parseISO(event.start), 'HH:mm')}
                 </div>
@@ -41,6 +45,15 @@ const AgendaView = ({ events, loading }) => {
                 </div>
               </div>
             ))}
+{selectedEvent && (
+  <DialogPortal isOpen={true} onClose={closeEventModal} titleId="event-modal-title">
+    <button className="modal-close" onClick={closeEventModal} aria-label="Fechar detalhe do evento">✕</button>
+    <h3 id="event-modal-title" className="share-modal-title">{selectedEvent.summary}</h3>
+    <p className="event-modal-time">{format(parseISO(selectedEvent.start), 'PPPP p', { locale: ptBR })}</p>
+    {selectedEvent.location && <p className="event-modal-location">📍 {selectedEvent.location}</p>}
+    {selectedEvent.description && <p className="event-modal-description">{selectedEvent.description}</p>}
+  </DialogPortal>
+)}
           </div>
         </div>
       ))}
